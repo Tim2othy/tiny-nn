@@ -33,7 +33,7 @@ net.add(ActivationLayer(tanh, tanh_prime))
 
 # Set loss and train the network
 net.use(mse, mse_prime)
-net.fit(x_train[:20], y_train[:20], epochs=400, learning_rate=0.1)
+net.fit(x_train[:20], y_train[:20], epochs=500, learning_rate=0.07)
 
 # Test the network on a few samples
 out = net.predict(x_test[:3])

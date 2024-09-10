@@ -10,8 +10,10 @@ class Layer:
 
     # computes dE/dX for a given dE/dY (and update parameters if any)
     def backward_propagation(self, output_error, learning_rate):
-        raise NotImplementedError 
-    
+        raise NotImplementedError
+
     #  We can find out how E changes with a small change in Y easily
     # Using the chain rule we find out how a change in the input would change E
 
+
+# test git around 6

@@ -18,7 +18,7 @@ net.add(ActivationLayer(tanh, tanh_prime))
 
 
 # train
-net.fit(x_train, y_train, epochs=1000, learning_rate=0.1)
+net.fit(x_train, y_train, epochs=10000, learning_rate=0.01)
 
 
 # test

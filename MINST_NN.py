@@ -44,11 +44,11 @@ net.add(ActivationLayer(tanh, tanh_prime))
 
 # Set loss and train the network
 net.use(mse, mse_prime)
-net.fit(x_train[:20], y_train[:20], epochs=500, learning_rate=0.04)
+net.fit(x_train[:1000], y_train[:1000], epochs=500, learning_rate=0.04)
 
 # Test the network on a few samples
-out = net.predict(x_test[:3])
+out = net.predict(x_test[:8])
 print("\nPredicted values:")
-print(out)
+print(np.round(out, 1))
 print("True values:")
-print(y_test[:3])
+print(y_test[:8])

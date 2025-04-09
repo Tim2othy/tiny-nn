@@ -99,76 +99,58 @@ def mse_prime(y_true, y_pred):
     return 2 * (y_pred - y_true) / y_true.size
 
 
-class Network:
-    def __init__(self):
-        self.layers = []
-        self.loss = mse
-        self.loss_prime = mse_prime
+# predict output for given input
+def predict(input_data):
+    # sample dimension first
+    samples = len(input_data)
+    result = []
 
-    # add layer to network
-    def add(self, layer):
-        self.layers.append(layer)
+    # run network over all samples
+    for i in range(samples):
+        # forward propagation
+        output = input_data[i]
+        for layer in layers:
+            output = layer.forward_propagation(output)
+        result.append(output)
 
-    # predict output for given input
-    def predict(self, input_data):
-        # sample dimension first
-        samples = len(input_data)
-        result = []
+    return result
 
-        # run network over all samples
-        for i in range(samples):
-            # forward propagation
-            output = input_data[i]
-            for layer in self.layers:
-                output = layer.forward_propagation(output)
-            result.append(output)
 
-        return result
+layers = []
 
-    # evaluate results for some data
-    def evaluate(self, x_test, y_test):
-        # sample dimension first
-        samples = len(x_test)
+
+# add layer to network
+def add(layer):
+    layers.append(layer)
+
+
+# train the network
+def fit(x_train, y_train, epochs, learning_rate):
+    # sample dimension first
+    samples = len(x_train)
+
+    # training loop
+    for i in range(epochs):
         err = 0
+        for j in range(samples):
+            # forward propagation
+            output = x_train[j]
+            for layer in layers:
+                output = layer.forward_propagation(output)
 
-        prediction = self.predict(x_test)
+            # compute loss (for display purpose only)
+            err = err + mse(y_train[j], output)
 
-        # run network over all samples
-        for i in range(samples):
+            # backward propagation
+            error = mse_prime(y_train[j], output)
+            for layer in reversed(layers):
+                error = layer.backward_propagation(error, learning_rate)
 
-            example_error = self.loss(y_test[i], prediction[i])
+        # calculate average error on all samples
+        err /= samples
 
-            err = err + example_error
-
-        return err / samples
-
-    # train the network
-    def fit(self, x_train, y_train, epochs, learning_rate):
-        # sample dimension first
-        samples = len(x_train)
-
-        # training loop
-        for i in range(epochs):
-            err = 0
-            for j in range(samples):
-                # forward propagation
-                output = x_train[j]
-                for layer in self.layers:
-                    output = layer.forward_propagation(output)
-
-                # compute loss (for display purpose only)
-                err = err + self.loss(y_train[j], output)
-
-                # backward propagation
-                error = self.loss_prime(y_train[j], output)
-                for layer in reversed(self.layers):
-                    error = layer.backward_propagation(error, learning_rate)
-
-            # calculate average error on all samples
-            err /= samples
-
-            if (i + 1) % round(epochs / 10) == 0 or i == 0:
-                print("For the epoch %d/%d   the error is %f" % (i + 1, epochs, err))
+        if (i + 1) % round(epochs / 10) == 0 or i == 0:
+            print("For the epoch %d/%d   the error is %f" % (i + 1, epochs, err))
 
 
 def to_categorical(y, num_classes=10):
@@ -187,18 +169,11 @@ def read_images_labels(images_filepath, labels_filepath):
     labels = []
     with open(labels_filepath, "rb") as file:
         magic, size = struct.unpack(">II", file.read(8))
-        if magic != 2049:
-            raise ValueError(
-                "Magic number mismatch, expected 2049, got {}".format(magic)
-            )
         labels = array("B", file.read())
 
     with open(images_filepath, "rb") as file:
         magic, size, rows, cols = struct.unpack(">IIII", file.read(16))
-        if magic != 2051:
-            raise ValueError(
-                "Magic number mismatch, expected 2051, got {}".format(magic)
-            )
+
         image_data = array("B", file.read())
     images = []
     for i in range(size):
@@ -241,17 +216,35 @@ x_test = x_test.reshape(x_test.shape[0], 1, 28 * 28).astype("float32") / 255
 y_test = to_categorical(y_test)
 
 # Create the network
-net = Network()
-net.add(FCLayer(28 * 28, 100))  # input_shape=(1, 28*28)    ;   output_shape=(1, 100)
-net.add(ReluLayer())
-net.add(FCLayer(100, 50))  # input_shape=(1, 100)      ;   output_shape=(1, 50)
-net.add(ReluLayer())
-net.add(FCLayer(50, 10))  # input_shape=(1, 50)       ;   output_shape=(1, 10)
-net.add(SoftmaxLayer())
+add(FCLayer(28 * 28, 100))  # input_shape=(1, 28*28)    ;   output_shape=(1, 100)
+add(ReluLayer())
+add(FCLayer(100, 50))  # input_shape=(1, 100)      ;   output_shape=(1, 50)
+add(ReluLayer())
+add(FCLayer(50, 10))  # input_shape=(1, 50)       ;   output_shape=(1, 10)
+add(SoftmaxLayer())
 
 # train the network
-net.fit(x_train[:4000], y_train[:4000], epochs=12, learning_rate=0.04)
+fit(x_train[:4000], y_train[:4000], epochs=12, learning_rate=0.04)
+
+
+# evaluate results for some data
+def evaluate(x_test, y_test):
+    # sample dimension first
+    samples = len(x_test)
+    err = 0
+
+    prediction = predict(x_test)
+
+    # run network over all samples
+    for i in range(samples):
+
+        example_error = mse(y_test[i], prediction[i])
+
+        err = err + example_error
+
+    return err / samples
+
 
 # evaluate on test data
-test_loss = net.evaluate(x_test[:100], y_test[:100])
+test_loss = evaluate(x_test[:100], y_test[:100])
 print("Test loss:", test_loss)

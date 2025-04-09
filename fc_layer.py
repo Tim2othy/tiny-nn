@@ -14,8 +14,8 @@ class FCLayer(Layer):
         self.bias = np.random.rand(1, output_size) - 0.5
 
     # returns output for a given input
-    def forward_propagation(self, input_data):
-        self.input = input_data
+    def forward_propagation(self, input):
+        self.input = input
         self.output = (
             np.dot(self.input, self.weights) + self.bias
         )  # So this is the output(input) i gues the dot product of the input and weights + the bias, makes sense

@@ -8,8 +8,8 @@ class ActivationLayer(Layer):
         self.activation_prime = activation_prime
 
     # returns the activated input
-    def forward_propagation(self, input_data):
-        self.input = input_data
+    def forward_propagation(self, input):
+        self.input = input
         self.output = self.activation(self.input)
         return self.output
 

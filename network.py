@@ -31,6 +31,15 @@ class Network:
 
     # train the network
     def fit(self, x_train, y_train, epochs, learning_rate):
+        # Ensure loss function is set
+        if self.loss is None:
+            raise ValueError(
+                "Loss function is not set. Use the 'use' method to set the loss and loss_prime."
+            )
+        if self.loss_prime is None:
+            raise ValueError(
+                "Loss function is not set. Use the 'use' method to set the loss and loss_prime."
+            )
         # sample dimension first
         samples = len(x_train)
 

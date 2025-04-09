@@ -1,7 +1,7 @@
 import numpy as np
 
 from activation_Layer import ActivationLayer
-from layers import FCLayer, tanh, tanh_prime
+from layers import FCLayer, SoftmaxLayer, tanh, tanh_prime
 from losses import mse, mse_prime
 from mnist_loader import MnistDataloader, paths, to_categorical
 from network import Network
@@ -39,7 +39,7 @@ net.add(ActivationLayer(tanh, tanh_prime))
 net.add(FCLayer(100, 50))  # input_shape=(1, 100)      ;   output_shape=(1, 50)
 net.add(ActivationLayer(tanh, tanh_prime))
 net.add(FCLayer(50, 10))  # input_shape=(1, 50)       ;   output_shape=(1, 10)
-net.add(ActivationLayer(tanh, tanh_prime))
+net.add(SoftmaxLayer())
 
 # train the network
 net.fit(x_train[:1000], y_train[:1000], epochs=12, learning_rate=0.04)

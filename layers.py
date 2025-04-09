@@ -50,3 +50,17 @@ def relu(x):
 
 def relu_prime(x):
     return np.where(x > 0, 1, 0)
+
+
+class SoftmaxLayer(Layer):
+    def forward_propagation(self, input):
+        # Compute the softmax output
+        exp_values = np.exp(input - np.max(input, axis=1, keepdims=True))
+        probabilities = exp_values / np.sum(exp_values, axis=1, keepdims=True)
+        return probabilities
+
+    def backward_propagation(self, output_error, learning_rate):
+        # Compute the gradient of the softmax function
+        return (
+            output_error  # No gradient update needed for softmax layer in this context
+        )

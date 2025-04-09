@@ -1,5 +1,4 @@
 import numpy as np
-
 from keras.datasets import mnist
 from keras.utils import to_categorical  # Corrected import statement
 
@@ -8,27 +7,17 @@ from keras.utils import to_categorical  # Corrected import statement
 
 # Preprocess the training data
 # Reshape to (num_samples, 1, 28*28) and normalize to range [0, 1]
-x_train = x_train.reshape(x_train.shape[0], 1, 28*28).astype('float32') / 255
+x_train = x_train.reshape(x_train.shape[0], 1, 28 * 28).astype("float32") / 255
 # Convert labels to one-hot encoding
 y_train = to_categorical(y_train)
 
 # Preprocess the test data
-x_test = x_test.reshape(x_test.shape[0], 1, 28*28).astype('float32') / 255
+x_test = x_test.reshape(x_test.shape[0], 1, 28 * 28).astype("float32") / 255
 y_test = to_categorical(y_test)
 
 
-
-
-
-
-
-
-
-
-
-
-
 # Create the network class
+
 
 class Network:
     def __init__(self):
@@ -85,15 +74,12 @@ class Network:
 
             # calculate average error on all samples
             err /= samples
-            
-            print('For the epoch %d/%d   the error is %f' % (i+1, epochs, err))
-            
+
+            print("For the epoch %d/%d   the error is %f" % (i + 1, epochs, err))
 
 
+# Create the basic layer class
 
-
-
-#Create the basic layer class
 
 # Base class
 class Layer:
@@ -107,27 +93,31 @@ class Layer:
 
     # computes dE/dX for a given dE/dY (and update parameters if any)
     def backward_propagation(self, output_error, learning_rate):
-        raise NotImplementedError 
-    
+        raise NotImplementedError
+
     #  We can find out how E changes with a small change in Y easily
     # Using the chain rule we find out how a change in the input would change E
 
 
+# create the fully connected layer
 
-#create the fully connected layer
 
 # inherit from base class Layer
 class FCLayer(Layer):
     # input_size = number of input neurons
     # output_size = number of output neurons
     def __init__(self, input_size, output_size):
-        self.weights = np.random.rand(input_size, output_size) - 0.5 # So the weights and biases are randomized
+        self.weights = (
+            np.random.rand(input_size, output_size) - 0.5
+        )  # So the weights and biases are randomized
         self.bias = np.random.rand(1, output_size) - 0.5
 
     # returns output for a given input
     def forward_propagation(self, input_data):
         self.input = input_data
-        self.output = np.dot(self.input, self.weights) + self.bias # So this is the output(input) i gues the dot product of the input and weights + the bias, makes sense
+        self.output = (
+            np.dot(self.input, self.weights) + self.bias
+        )  # So this is the output(input) i gues the dot product of the input and weights + the bias, makes sense
         return self.output
 
     # computes dE/dW, dE/dB for a given output_error=dE/dY. Returns input_error=dE/dX.
@@ -137,10 +127,11 @@ class FCLayer(Layer):
         # dBias = output_error
 
         # update parameters
-        self.weights -= learning_rate * weights_error # Makes sense the weight becomes itself minus the learning weigt times weight error I guess this is nabla E or so
+        self.weights -= (
+            learning_rate * weights_error
+        )  # Makes sense the weight becomes itself minus the learning weigt times weight error I guess this is nabla E or so
         self.bias -= learning_rate * output_error
         return input_error
-    
 
 
 # Create the activation layer
@@ -162,49 +153,38 @@ class ActivationLayer(Layer):
     # learning_rate is not used because there are no "learnable" parameters.
     def backward_propagation(self, output_error, learning_rate):
         return self.activation_prime(self.input) * output_error
-    
-
-
-
-
-
-
 
 
 # activation function and its derivative
 def tanh(x):
-   return np.tanh(x);
+    return np.tanh(x)
+
 
 def tanh_prime(x):
-    return 1-np.tanh(x)**2;
-
-
+    return 1 - np.tanh(x) ** 2
 
 
 # Create the network
 net = Network()
-net.add(FCLayer(28*28, 100))                # input_shape=(1, 28*28)    ;   output_shape=(1, 100)
+net.add(FCLayer(28 * 28, 100))  # input_shape=(1, 28*28)    ;   output_shape=(1, 100)
 net.add(ActivationLayer(tanh, tanh_prime))
-net.add(FCLayer(100, 50))                   # input_shape=(1, 100)      ;   output_shape=(1, 50)
+net.add(FCLayer(100, 50))  # input_shape=(1, 100)      ;   output_shape=(1, 50)
 net.add(ActivationLayer(tanh, tanh_prime))
-net.add(FCLayer(50, 10))                    # input_shape=(1, 50)       ;   output_shape=(1, 10)
+net.add(FCLayer(50, 10))  # input_shape=(1, 50)       ;   output_shape=(1, 10)
 net.add(ActivationLayer(tanh, tanh_prime))
 
 
+# create the loss functions
 
-
-#create the loss functions
 
 # loss function and its derivative
 def mse(y_true, y_pred):
-    
-    return np.mean(np.power(y_true-y_pred, 2));
+
+    return np.mean(np.power(y_true - y_pred, 2))
+
 
 def mse_prime(y_true, y_pred):
-    return 2*(y_pred-y_true)/y_true.size;
-
-
-
+    return 2 * (y_pred - y_true) / y_true.size
 
 
 # Set loss and train the network

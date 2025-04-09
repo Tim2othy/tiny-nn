@@ -1,13 +1,13 @@
 import numpy as np
 
-from network import Network
-from fc_layer import FCLayer
 from activation_Layer import ActivationLayer
 from activations import tanh, tanh_prime
+from fc_layer import FCLayer
 from losses import mse, mse_prime
+from network import Network
 
 # training data
-x_train = np.array([[[0,0]], [[0,1]], [[1,0]], [[1,1]]])
+x_train = np.array([[[0, 0]], [[0, 1]], [[1, 0]], [[1, 1]]])
 y_train = np.array([[[0]], [[1]], [[1]], [[0]]])
 
 # network

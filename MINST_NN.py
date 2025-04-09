@@ -1,8 +1,10 @@
+import numpy as np
+
 from activation_Layer import ActivationLayer
 from activations import tanh, tanh_prime
 from fc_layer import FCLayer
 from losses import mse, mse_prime
-from mnist_loader import MnistDataloader, paths
+from mnist_loader import MnistDataloader, paths, to_categorical
 from network import Network
 
 mnist_dataloader = MnistDataloader(
@@ -14,6 +16,12 @@ mnist_dataloader = MnistDataloader(
 
 # Load MNIST data
 (x_train, y_train), (x_test, y_test) = mnist_dataloader.load_data()
+
+
+# Convert to numpy arrays first
+x_train = np.array(x_train, dtype=np.float32)
+x_test = np.array(x_test, dtype=np.float32)
+
 
 # Preprocess the training data
 # Reshape to (num_samples, 1, 28*28) and normalize to range [0, 1]

@@ -13,6 +13,16 @@ paths = {
     "test_lab": "input/t10k-labels-idx1-ubyte",
 }
 
+
+def to_categorical(y, num_classes=10):
+    """Convert class vector to binary class matrix (one-hot encoding)"""
+    y = np.array(y, dtype="int")
+    n = y.shape[0]
+    categorical = np.zeros((n, num_classes))
+    categorical[np.arange(n), y] = 1
+    return categorical
+
+
 # MNIST Data Loader Class
 
 

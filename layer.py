@@ -14,6 +14,3 @@ class Layer:
 
     #  We can find out how E changes with a small change in Y easily
     # Using the chain rule we find out how a change in the input would change E
-
-
-# test git around 6

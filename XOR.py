@@ -18,21 +18,13 @@ net.add(FCLayer(3, 1))
 net.add(ActivationLayer(tanh, tanh_prime))
 
 
-print("Hello World 1")
-
-
 # train
 net.use(mse, mse_prime)
 net.fit(x_train, y_train, epochs=1000, learning_rate=0.1)
 
 
-print("Hello World 2")
-
-
 # test
 out = net.predict(x_train)
-print("Hello World 3")
 
 
 print(out)
-print("Hello World 4")

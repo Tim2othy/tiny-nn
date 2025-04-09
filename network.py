@@ -54,4 +54,5 @@ class Network:
             # calculate average error on all samples
             err /= samples
 
-            print("For the epoch %d/%d   the error is %f" % (i + 1, epochs, err))
+            if (i + 1) % round(epochs / 10) == 0 or i == 0:
+                print("For the epoch %d/%d   the error is %f" % (i + 1, epochs, err))

@@ -1,15 +1,12 @@
 class Network:
-    def __init__(self):
+    def __init__(self, loss, loss_prime):
         self.layers = []
+        self.loss = loss
+        self.loss_prime = loss_prime
 
     # add layer to network
     def add(self, layer):
         self.layers.append(layer)
-
-    # set loss to use
-    def use(self, loss, loss_prime):
-        self.loss = loss
-        self.loss_prime = loss_prime
 
     # predict output for given input
     def predict(self, input_data):

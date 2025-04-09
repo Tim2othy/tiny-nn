@@ -34,7 +34,7 @@ x_test = x_test.reshape(x_test.shape[0], 1, 28 * 28).astype("float32") / 255
 y_test = to_categorical(y_test)
 
 # Create the network
-net = Network()
+net = Network(mse, mse_prime)
 net.add(FCLayer(28 * 28, 100))  # input_shape=(1, 28*28)    ;   output_shape=(1, 100)
 net.add(ActivationLayer(tanh, tanh_prime))
 net.add(FCLayer(100, 50))  # input_shape=(1, 100)      ;   output_shape=(1, 50)
@@ -42,8 +42,7 @@ net.add(ActivationLayer(tanh, tanh_prime))
 net.add(FCLayer(50, 10))  # input_shape=(1, 50)       ;   output_shape=(1, 10)
 net.add(ActivationLayer(tanh, tanh_prime))
 
-# Set loss and train the network
-net.use(mse, mse_prime)
+# train the network
 net.fit(x_train[:1000], y_train[:1000], epochs=12, learning_rate=0.04)
 
 # evaluate on test data

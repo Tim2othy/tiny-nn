@@ -5,12 +5,7 @@ import random
 import matplotlib.pyplot as plt
 
 from mnist_loader import MnistDataloader
-
-# Set file paths based on added MNIST Datasets
-training_images_filepath = "input/train-images-idx3-ubyte"
-training_labels_filepath = "input/train-labels-idx1-ubyte"
-test_images_filepath = "input/t10k-images-idx3-ubyte"
-test_labels_filepath = "input/t10k-labels-idx1-ubyte"
+from mnist_loader import paths
 
 
 # Helper function to show a list of images with their relating titles
@@ -34,10 +29,10 @@ def show_images(images, title_texts):
 # Load MINST dataset
 
 mnist_dataloader = MnistDataloader(
-    training_images_filepath,
-    training_labels_filepath,
-    test_images_filepath,
-    test_labels_filepath,
+    paths["train_img"],
+    paths["train_lab"],
+    paths["test_img"],
+    paths["test_lab"],
 )
 (x_train, y_train), (x_test, y_test) = mnist_dataloader.load_data()
 

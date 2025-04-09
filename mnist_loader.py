@@ -5,6 +5,14 @@ from array import array
 
 import numpy as np
 
+# dict of file paths
+paths = {
+    "train_img": "input/train-images-idx3-ubyte",
+    "train_lab": "input/train-labels-idx1-ubyte",
+    "test_img": "input/t10k-images-idx3-ubyte",
+    "test_lab": "input/t10k-labels-idx1-ubyte",
+}
+
 # MNIST Data Loader Class
 
 

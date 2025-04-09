@@ -1,14 +1,19 @@
-from keras.datasets import mnist
-from keras.utils import to_categorical  # Corrected import statement
-
 from activation_Layer import ActivationLayer
 from activations import tanh, tanh_prime
 from fc_layer import FCLayer
 from losses import mse, mse_prime
+from mnist_loader import MnistDataloader, paths
 from network import Network
 
+mnist_dataloader = MnistDataloader(
+    paths["train_img"],
+    paths["train_lab"],
+    paths["test_img"],
+    paths["test_lab"],
+)
+
 # Load MNIST data
-(x_train, y_train), (x_test, y_test) = mnist.load_data()
+(x_train, y_train), (x_test, y_test) = mnist_dataloader.load_data()
 
 # Preprocess the training data
 # Reshape to (num_samples, 1, 28*28) and normalize to range [0, 1]

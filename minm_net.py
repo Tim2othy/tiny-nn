@@ -171,15 +171,6 @@ class Network:
                 print("For the epoch %d/%d   the error is %f" % (i + 1, epochs, err))
 
 
-# dict of file paths
-paths = {
-    "train_img": "input/train-images-idx3-ubyte",
-    "train_lab": "input/train-labels-idx1-ubyte",
-    "test_img": "input/t10k-images-idx3-ubyte",
-    "test_lab": "input/t10k-labels-idx1-ubyte",
-}
-
-
 def to_categorical(y, num_classes=10):
     """Convert class vector to binary class matrix (one-hot encoding)"""
     y = np.array(y, dtype="int")
@@ -192,65 +183,46 @@ def to_categorical(y, num_classes=10):
 # MNIST Data Loader Class
 
 
-class MnistDataloader(object):
-    def __init__(
-        self,
-        training_images_filepath,
-        training_labels_filepath,
-        test_images_filepath,
-        test_labels_filepath,
-    ):
-        self.training_images_filepath = training_images_filepath
-        self.training_labels_filepath = training_labels_filepath
-        self.test_images_filepath = test_images_filepath
-        self.test_labels_filepath = test_labels_filepath
+def read_images_labels(images_filepath, labels_filepath):
+    labels = []
+    with open(labels_filepath, "rb") as file:
+        magic, size = struct.unpack(">II", file.read(8))
+        if magic != 2049:
+            raise ValueError(
+                "Magic number mismatch, expected 2049, got {}".format(magic)
+            )
+        labels = array("B", file.read())
 
-    def read_images_labels(self, images_filepath, labels_filepath):
-        labels = []
-        with open(labels_filepath, "rb") as file:
-            magic, size = struct.unpack(">II", file.read(8))
-            if magic != 2049:
-                raise ValueError(
-                    "Magic number mismatch, expected 2049, got {}".format(magic)
-                )
-            labels = array("B", file.read())
+    with open(images_filepath, "rb") as file:
+        magic, size, rows, cols = struct.unpack(">IIII", file.read(16))
+        if magic != 2051:
+            raise ValueError(
+                "Magic number mismatch, expected 2051, got {}".format(magic)
+            )
+        image_data = array("B", file.read())
+    images = []
+    for i in range(size):
+        images.append([0] * rows * cols)
+    for i in range(size):
+        img = np.array(image_data[i * rows * cols : (i + 1) * rows * cols])
+        img = img.reshape(28, 28)
+        images[i][:] = img
 
-        with open(images_filepath, "rb") as file:
-            magic, size, rows, cols = struct.unpack(">IIII", file.read(16))
-            if magic != 2051:
-                raise ValueError(
-                    "Magic number mismatch, expected 2051, got {}".format(magic)
-                )
-            image_data = array("B", file.read())
-        images = []
-        for i in range(size):
-            images.append([0] * rows * cols)
-        for i in range(size):
-            img = np.array(image_data[i * rows * cols : (i + 1) * rows * cols])
-            img = img.reshape(28, 28)
-            images[i][:] = img
-
-        return images, labels
-
-    def load_data(self):
-        x_train, y_train = self.read_images_labels(
-            self.training_images_filepath, self.training_labels_filepath
-        )
-        x_test, y_test = self.read_images_labels(
-            self.test_images_filepath, self.test_labels_filepath
-        )
-        return (x_train, y_train), (x_test, y_test)
+    return images, labels
 
 
-mnist_dataloader = MnistDataloader(
-    paths["train_img"],
-    paths["train_lab"],
-    paths["test_img"],
-    paths["test_lab"],
-)
+def load_data():
+    x_train, y_train = read_images_labels(
+        "input/train-images-idx3-ubyte", "input/train-labels-idx1-ubyte"
+    )
+    x_test, y_test = read_images_labels(
+        "input/t10k-images-idx3-ubyte", "input/t10k-labels-idx1-ubyte"
+    )
+    return (x_train, y_train), (x_test, y_test)
+
 
 # Load MNIST data
-(x_train, y_train), (x_test, y_test) = mnist_dataloader.load_data()
+(x_train, y_train), (x_test, y_test) = load_data()
 
 
 # Convert to numpy arrays first

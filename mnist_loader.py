@@ -98,7 +98,7 @@ def show_images(images, title_texts):
         image = x[0]
         title_text = x[1]
         plt.subplot(rows, cols, index)
-        plt.imshow(image, cmap=plt.cm.gray)
+        plt.imshow(image, cmap="gray")
         if title_text != "":
             plt.title(title_text, fontsize=15)
         index += 1

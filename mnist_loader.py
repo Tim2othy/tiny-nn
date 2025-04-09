@@ -4,7 +4,6 @@
 import random
 import struct
 from array import array
-from os.path import join
 
 import matplotlib.pyplot as plt
 import numpy as np  # linear algebra
@@ -66,20 +65,11 @@ class MnistDataloader(object):
 ### break
 
 
-#
-# Verify Reading Dataset via MnistDataloader class
-#
-# %matplotlib inline
-
-
-#
 # Set file paths based on added MNIST Datasets
-#
-input_path = "input"
-training_images_filepath = join(input_path, "train-images-idx3-ubyte")
-training_labels_filepath = join(input_path, "train-labels-idx1-ubyte")
-test_images_filepath = join(input_path, "t10k-images-idx3-ubyte")
-test_labels_filepath = join(input_path, "t10k-labels-idx1-ubyte")
+training_images_filepath = "input/train-images-idx3-ubyte"
+training_labels_filepath = "input/train-labels-idx1-ubyte"
+test_images_filepath = "input/t10k-images-idx3-ubyte"
+test_labels_filepath = "input/t10k-labels-idx1-ubyte"
 
 
 #

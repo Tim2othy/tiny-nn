@@ -1,8 +1,6 @@
 class Network:
     def __init__(self):
         self.layers = []
-        self.loss = None
-        self.loss_prime = None
 
     # add layer to network
     def add(self, layer):
@@ -28,6 +26,23 @@ class Network:
             result.append(output)
 
         return result
+
+    # evaluate results for some data
+    def evaluate(self, x_test, y_test):
+        # sample dimension first
+        samples = len(x_test)
+        err = 0
+
+        prediction = self.predict(x_test)
+
+        # run network over all samples
+        for i in range(samples):
+
+            example_error = self.loss(y_test[i], prediction[i])
+
+            err = err + example_error
+
+        return err / samples
 
     # train the network
     def fit(self, x_train, y_train, epochs, learning_rate):

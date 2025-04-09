@@ -1,8 +1,7 @@
 import numpy as np
 
 from activation_Layer import ActivationLayer
-from activations import tanh, tanh_prime
-from fc_layer import FCLayer
+from layers import FCLayer, tanh, tanh_prime
 from losses import mse, mse_prime
 from mnist_loader import MnistDataloader, paths, to_categorical
 from network import Network

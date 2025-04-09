@@ -1,7 +1,7 @@
 import numpy as np
 
 from activation_Layer import ActivationLayer
-from layers import FCLayer, SoftmaxLayer, tanh, tanh_prime
+from layers import FCLayer, SoftmaxLayer, relu, relu_prime
 from losses import mse, mse_prime
 from mnist_loader import MnistDataloader, paths, to_categorical
 from network import Network
@@ -35,22 +35,22 @@ y_test = to_categorical(y_test)
 # Create the network
 net = Network(mse, mse_prime)
 net.add(FCLayer(28 * 28, 100))  # input_shape=(1, 28*28)    ;   output_shape=(1, 100)
-net.add(ActivationLayer(tanh, tanh_prime))
+net.add(ActivationLayer(relu, relu_prime))
 net.add(FCLayer(100, 50))  # input_shape=(1, 100)      ;   output_shape=(1, 50)
-net.add(ActivationLayer(tanh, tanh_prime))
+net.add(ActivationLayer(relu, relu_prime))
 net.add(FCLayer(50, 10))  # input_shape=(1, 50)       ;   output_shape=(1, 10)
 net.add(SoftmaxLayer())
 
 # train the network
-net.fit(x_train[:1000], y_train[:1000], epochs=12, learning_rate=0.04)
+net.fit(x_train[:4000], y_train[:4000], epochs=12, learning_rate=0.04)
 
 # evaluate on test data
 test_loss = net.evaluate(x_test[:100], y_test[:100])
 print("Test loss:", test_loss)
 
 # visualize the network on a few samples
-out = net.predict(x_test[:8])
-print("\nPredicted values:")
-print(np.round(out, 1))
-print("True values:")
-print(y_test[:8])
+# out = net.predict(x_test[:8])
+# print("\nPredicted values:")
+# print(np.round(out, 1))
+# print("True values:")
+# print(y_test[:8])

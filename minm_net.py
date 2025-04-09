@@ -4,16 +4,6 @@ from array import array
 import numpy as np
 
 
-# loss function and its derivative
-def mse(y_true, y_pred):
-
-    return np.mean(np.power(y_true - y_pred, 2))
-
-
-def mse_prime(y_true, y_pred):
-    return 2 * (y_pred - y_true) / y_true.size
-
-
 # Base class
 class Layer:
     def __init__(self):
@@ -64,14 +54,6 @@ class FCLayer(Layer):
         return input_error
 
 
-def relu(x):
-    return np.maximum(0, x)
-
-
-def relu_prime(x):
-    return np.where(x > 0, 1, 0)
-
-
 class SoftmaxLayer(Layer):
     def forward_propagation(self, input):
         # Compute the softmax output
@@ -86,8 +68,16 @@ class SoftmaxLayer(Layer):
         )
 
 
+def relu(x):
+    return np.maximum(0, x)
+
+
+def relu_prime(x):
+    return np.where(x > 0, 1, 0)
+
+
 # inherit from base class Layer
-class ActivationLayer(Layer):
+class ReluLayer(Layer):
     def forward_propagation(self, input):
         self.input = input
         self.output = relu(self.input)
@@ -97,6 +87,16 @@ class ActivationLayer(Layer):
     # learning_rate is not used because there are no "learnable" parameters.
     def backward_propagation(self, output_error, learning_rate):
         return relu_prime(self.input) * output_error
+
+
+# loss function and its derivative
+def mse(y_true, y_pred):
+
+    return np.mean(np.power(y_true - y_pred, 2))
+
+
+def mse_prime(y_true, y_pred):
+    return 2 * (y_pred - y_true) / y_true.size
 
 
 class Network:
@@ -271,9 +271,9 @@ y_test = to_categorical(y_test)
 # Create the network
 net = Network()
 net.add(FCLayer(28 * 28, 100))  # input_shape=(1, 28*28)    ;   output_shape=(1, 100)
-net.add(ActivationLayer())
+net.add(ReluLayer())
 net.add(FCLayer(100, 50))  # input_shape=(1, 100)      ;   output_shape=(1, 50)
-net.add(ActivationLayer())
+net.add(ReluLayer())
 net.add(FCLayer(50, 10))  # input_shape=(1, 50)       ;   output_shape=(1, 10)
 net.add(SoftmaxLayer())
 

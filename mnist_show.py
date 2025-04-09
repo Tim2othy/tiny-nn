@@ -1,3 +1,5 @@
+"""This shows some of the MNIST Dataset"""
+
 import random
 
 import matplotlib.pyplot as plt

@@ -1,10 +1,9 @@
-"""This reads in the "MNIST Dataset" and visualizes it"""
+"""This reads in the MNIST Dataset"""
 
 import struct
 from array import array
 
 import numpy as np
-
 
 # MNIST Data Loader Class
 

@@ -64,15 +64,6 @@ class FCLayer(Layer):
         return input_error
 
 
-# activation function and its derivative
-def tanh(x):
-    return np.tanh(x)
-
-
-def tanh_prime(x):
-    return 1 - np.tanh(x) ** 2
-
-
 def relu(x):
     return np.maximum(0, x)
 
@@ -97,27 +88,22 @@ class SoftmaxLayer(Layer):
 
 # inherit from base class Layer
 class ActivationLayer(Layer):
-    def __init__(self, activation, activation_prime):
-        self.activation = activation
-        self.activation_prime = activation_prime
-
-    # returns the activated input
     def forward_propagation(self, input):
         self.input = input
-        self.output = self.activation(self.input)
+        self.output = relu(self.input)
         return self.output
 
     # Returns input_error=dE/dX for a given output_error=dE/dY.
     # learning_rate is not used because there are no "learnable" parameters.
     def backward_propagation(self, output_error, learning_rate):
-        return self.activation_prime(self.input) * output_error
+        return relu_prime(self.input) * output_error
 
 
 class Network:
-    def __init__(self, loss, loss_prime):
+    def __init__(self):
         self.layers = []
-        self.loss = loss
-        self.loss_prime = loss_prime
+        self.loss = mse
+        self.loss_prime = mse_prime
 
     # add layer to network
     def add(self, layer):
@@ -158,15 +144,6 @@ class Network:
 
     # train the network
     def fit(self, x_train, y_train, epochs, learning_rate):
-        # Ensure loss function is set
-        if self.loss is None:
-            raise ValueError(
-                "Loss function is not set. Use the 'use' method to set the loss and loss_prime."
-            )
-        if self.loss_prime is None:
-            raise ValueError(
-                "Loss function is not set. Use the 'use' method to set the loss and loss_prime."
-            )
         # sample dimension first
         samples = len(x_train)
 
@@ -292,11 +269,11 @@ x_test = x_test.reshape(x_test.shape[0], 1, 28 * 28).astype("float32") / 255
 y_test = to_categorical(y_test)
 
 # Create the network
-net = Network(mse, mse_prime)
+net = Network()
 net.add(FCLayer(28 * 28, 100))  # input_shape=(1, 28*28)    ;   output_shape=(1, 100)
-net.add(ActivationLayer(relu, relu_prime))
+net.add(ActivationLayer())
 net.add(FCLayer(100, 50))  # input_shape=(1, 100)      ;   output_shape=(1, 50)
-net.add(ActivationLayer(relu, relu_prime))
+net.add(ActivationLayer())
 net.add(FCLayer(50, 10))  # input_shape=(1, 50)       ;   output_shape=(1, 10)
 net.add(SoftmaxLayer())
 
@@ -306,10 +283,3 @@ net.fit(x_train[:4000], y_train[:4000], epochs=12, learning_rate=0.04)
 # evaluate on test data
 test_loss = net.evaluate(x_test[:100], y_test[:100])
 print("Test loss:", test_loss)
-
-# visualize the network on a few samples
-# out = net.predict(x_test[:8])
-# print("\nPredicted values:")
-# print(np.round(out, 1))
-# print("True values:")
-# print(y_test[:8])

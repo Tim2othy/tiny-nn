@@ -57,67 +57,40 @@ def get_data():
 #
 # Layers
 #
-class Layer:
-    def __init__(self):
-        self.input = None
-        self.output = None
-
-    # computes the output Y of a layer for a given input X - We can always know what X will be for some Y
-    def forward_propagation(self, input):
-        raise NotImplementedError
-
-    # computes dE/dX for a given dE/dY (and update parameters if any)
-    def backward_propagation(self, output_error, learning_rate):
-        raise NotImplementedError
-
-    #  We can find out how E changes with a small change in Y easily
-    # Using the chain rule we find out how a change in the input would change E
 
 
-# inherit from base class Layer
-class FCLayer(Layer):
-    # input_size = number of input neurons
-    # output_size = number of output neurons
-    def __init__(self, input_size, output_size):
-        self.weights = (
-            np.random.rand(input_size, output_size) - 0.5
-        )  # So the weights and biases are randomized
-        self.bias = np.random.rand(1, output_size) - 0.5
-
-    # returns output for a given input
-    def forward_propagation(self, input):
-        self.input = input
-        self.output = (
-            np.dot(self.input, self.weights) + self.bias
-        )  # So this is the output(input) i gues the dot product of the input and weights + the bias, makes sense
-        return self.output
-
-    # computes dE/dW, dE/dB for a given output_error=dE/dY. Returns input_error=dE/dX.
-    def backward_propagation(self, output_error, learning_rate):
-        input_error = np.dot(output_error, self.weights.T)
-        weights_error = np.dot(self.input.T, output_error)
-        # dBias = output_error
-
-        # update parameters
-        self.weights -= (
-            learning_rate * weights_error
-        )  # Makes sense the weight becomes itself minus the learning weigt times weight error I guess this is nabla E or so
-        self.bias -= learning_rate * output_error
-        return input_error
+def fc_fp(bias, weights, input):
+    input = input
+    output = (
+        np.dot(input, weights) + bias
+    )  # So this is the output(input) i gues the dot product of the input and weights + the bias, makes sense
+    return output
 
 
-class SoftmaxLayer(Layer):
-    def forward_propagation(self, input):
-        # Compute the softmax output
-        exp_values = np.exp(input - np.max(input, axis=1, keepdims=True))
-        probabilities = exp_values / np.sum(exp_values, axis=1, keepdims=True)
-        return probabilities
+# computes dE/dW, dE/dB for a given output_error=dE/dY. Returns input_error=dE/dX.
+def fc_bp(bias, weights, input, output_error, learning_rate):
+    input_error = np.dot(output_error, weights.T)
+    weights_error = np.dot(input.T, output_error)
+    # dBias = output_error
 
-    def backward_propagation(self, output_error, learning_rate):
-        # Compute the gradient of the softmax function
-        return (
-            output_error  # No gradient update needed for softmax layer in this context
-        )
+    # update parameters
+    weights -= (
+        learning_rate * weights_error
+    )  # Makes sense the weight becomes itself minus the learning weigt times weight error I guess this is nabla E or so
+    bias -= learning_rate * output_error
+    return input_error
+
+
+def softmax_fp(input):
+    # Compute the softmax output
+    exp_values = np.exp(input - np.max(input, axis=1, keepdims=True))
+    probabilities = exp_values / np.sum(exp_values, axis=1, keepdims=True)
+    return probabilities
+
+
+def softmax_bp(output_error):
+    # Compute the gradient of the softmax function
+    return output_error  # No gradient update needed for softmax layer in this context
 
 
 def relu(x):
@@ -128,17 +101,15 @@ def relu_prime(x):
     return np.where(x > 0, 1, 0)
 
 
-# inherit from base class Layer
-class ReluLayer(Layer):
-    def forward_propagation(self, input):
-        self.input = input
-        self.output = relu(self.input)
-        return self.output
+def relu_fp(input):
+    output = relu(input)
+    return output
 
-    # Returns input_error=dE/dX for a given output_error=dE/dY.
-    # learning_rate is not used because there are no "learnable" parameters.
-    def backward_propagation(self, output_error, learning_rate):
-        return relu_prime(self.input) * output_error
+
+# Returns input_error=dE/dX for a given output_error=dE/dY.
+# learning_rate is not used because there are no "learnable" parameters.
+def relu_bp(input, output_error):
+    return relu_prime(input) * output_error
 
 
 # loss function and its derivative
@@ -164,16 +135,26 @@ def fit(x_train, y_train, epochs, learning_rate):
         for j in range(samples):
             # forward propagation
             output = x_train[j]
-            for layer in layers:
-                output = layer.forward_propagation(output)
+
+            output = fc_fp(b1, w1, output)
+            output = relu_fp(output)
+            output = fc_fp(b2, w2, output)
+            output = relu_fp(output)
+            output = fc_fp(b3, w3, output)
+            output = softmax_fp(output)
 
             # compute loss (for display purpose only)
             err = err + mse(y_train[j], output)
 
             # backward propagation
             error = mse_prime(y_train[j], output)
-            for layer in reversed(layers):
-                error = layer.backward_propagation(error, learning_rate)
+
+            error = softmax_bp(error)
+            error = fc_bp(b3, w3, output, error, learning_rate)
+            error = relu_bp(output, error)
+            error = fc_bp(b2, w2, output, error, learning_rate)
+            error = relu_bp(output, error)
+            error = fc_bp(b1, w1, output, error, learning_rate)
 
         # calculate average error on all samples
         err /= samples
@@ -219,15 +200,24 @@ def evaluate(x_test, y_test):
 
 layers = []
 
+# Initialize weights and biases
+w1 = np.random.rand(28 * 28, 100) - 0.5
+b1 = np.random.rand(1, 100) - 0.5
+w2 = np.random.rand(100, 50) - 0.5
+b2 = np.random.rand(1, 50) - 0.5
+w3 = np.random.rand(50, 10) - 0.5
+b3 = np.random.rand(1, 10) - 0.5
+
+
 #
 # Create the network
 #
-layers.append(FCLayer(28 * 28, 100))  # input_shape=(1, 28*28);   output_shape=(1, 100)
-layers.append(ReluLayer())
-layers.append(FCLayer(100, 50))  # input_shape=(1, 100)       ;   output_shape=(1, 50)
-layers.append(ReluLayer())
-layers.append(FCLayer(50, 10))  # input_shape=(1, 50)         ;   output_shape=(1, 10)
-layers.append(SoftmaxLayer())
+# layers.append(FCLayer(28 * 28, 100))  # input_shape=(1, 28*28);   output_shape=(1, 100)
+# layers.append(ReluLayer())
+# layers.append(FCLayer(100, 50))  # input_shape=(1, 100)       ;   output_shape=(1, 50)
+# layers.append(ReluLayer())
+# layers.append(FCLayer(50, 10))  # input_shape=(1, 50)         ;   output_shape=(1, 10)
+# layers.append(SoftmaxLayer())
 
 x_train, y_train, x_test, y_test = get_data()
 

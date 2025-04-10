@@ -13,8 +13,7 @@ def mse_prime(y_true, y_pred):
 
 def softmax(x):
     exp_values = np.exp(x - np.max(x, axis=1, keepdims=True))
-    probabilities = exp_values / np.sum(exp_values, axis=1, keepdims=True)
-    return probabilities
+    return exp_values / np.sum(exp_values, axis=1, keepdims=True)
 
 
 def relu_bp(input, output_error):
@@ -23,9 +22,8 @@ def relu_bp(input, output_error):
 
 def fc_bp(bias, weights, input, output_error):
     input_error = np.dot(output_error, weights.T)
-    weights_error = np.dot(input.T, output_error)
 
-    weights -= 0.04 * weights_error
+    weights -= 0.04 * np.dot(input.T, output_error)
     bias -= 0.04 * np.sum(output_error, axis=0, keepdims=True)
     return input_error
 
@@ -54,17 +52,15 @@ for i in range(samples):
     logit = np.dot(activation2, w3) + b3
     prediction = softmax(logit)
 
-    loss_print += mse(training_data[1][i], prediction)
-
     """backward propagation"""
     error = mse_prime(training_data[1][i], prediction)
-
     error = fc_bp(b3, w3, activation2, error)
     error = relu_bp(z2, error)
     error = fc_bp(b2, w2, activation1, error)
     error = relu_bp(z1, error)
     error = fc_bp(b1, w1, pixels, error)
 
+    loss_print += mse(training_data[1][i], prediction)
     if (i + 1) % round(samples / 8) == 0:
         loss_print /= samples / 8
 
@@ -72,26 +68,20 @@ for i in range(samples):
         loss_print = 0
 
 
-def evaluate(data):
-    samples = len(data[0])
-    loss_print = 0
+test_loss = 0
 
-    # run network over all samples
-    for i in range(samples):
-        """forward propagation"""
-        pixels = data[0][i]
+# run network over all samples
+for i in range(len(test_data[0])):
+    """forward propagation"""
+    pixels = test_data[0][i]
 
-        output = np.dot(pixels, w1) + b1
-        output = np.maximum(0, output)
-        output = np.dot(output, w2) + b2
-        output = np.maximum(0, output)
-        logit = np.dot(output, w3) + b3
-        prediction = softmax(logit)
+    output = np.dot(pixels, w1) + b1
+    output = np.maximum(0, output)
+    output = np.dot(output, w2) + b2
+    output = np.maximum(0, output)
+    logit = np.dot(output, w3) + b3
+    prediction = softmax(logit)
 
-        loss_print += mse(data[1][i], prediction)
+    test_loss += mse(test_data[1][i], prediction)
 
-    print(f"Test loss: {loss_print / samples:.4f}")
-
-
-# evaluate on test data
-evaluate(test_data)
+print(f"Test loss: {test_loss / len(test_data[0]):.4f}")

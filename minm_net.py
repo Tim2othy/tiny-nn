@@ -54,6 +54,8 @@ def get_data():
     return x_train, y_train, x_test, y_test
 
 
+LEARNING_RATE = 0.04
+
 #
 # Layers
 #
@@ -68,16 +70,16 @@ def fc_fp(bias, weights, input):
 
 
 # computes dE/dW, dE/dB for a given output_error=dE/dY. Returns input_error=dE/dX.
-def fc_bp(bias, weights, input, output_error, learning_rate):
+def fc_bp(bias, weights, input, output_error):
     input_error = np.dot(output_error, weights.T)
     weights_error = np.dot(input.T, output_error)
     # dBias = output_error
 
     # update parameters
     weights -= (
-        learning_rate * weights_error
+        LEARNING_RATE * weights_error
     )  # Makes sense the weight becomes itself minus the learning weigt times weight error I guess this is nabla E or so
-    bias -= learning_rate * output_error
+    bias -= LEARNING_RATE * output_error
     return input_error
 
 
@@ -102,7 +104,6 @@ def relu_fp(input):
 
 
 # Returns input_error=dE/dX for a given output_error=dE/dY.
-# learning_rate is not used because there are no "learnable" parameters.
 def relu_bp(input, output_error):
     return relu_prime(input) * output_error
 
@@ -120,7 +121,7 @@ def mse_prime(y_true, y_pred):
 #
 # network
 #
-def fit(x_train, y_train, epochs, learning_rate):
+def fit(x_train, y_train, epochs):
     # sample dimension first
     samples = len(x_train)
 
@@ -148,11 +149,11 @@ def fit(x_train, y_train, epochs, learning_rate):
             error = mse_prime(y_train[j], output)
 
             # skipping softmax since error isn't changed
-            error = fc_bp(b3, w3, activation2, error, learning_rate)
+            error = fc_bp(b3, w3, activation2, error)
             error = relu_bp(z2, error)
-            error = fc_bp(b2, w2, activation1, error, learning_rate)
+            error = fc_bp(b2, w2, activation1, error)
             error = relu_bp(z1, error)
-            error = fc_bp(b1, w1, pixels, error, learning_rate)
+            error = fc_bp(b1, w1, pixels, error)
 
         # calculate average error on all samples
         err /= samples
@@ -227,7 +228,7 @@ b3 = np.random.rand(1, 10) - 0.5
 x_train, y_train, x_test, y_test = get_data()
 
 # train the network
-fit(x_train[:4000], y_train[:4000], epochs=12, learning_rate=0.04)
+fit(x_train[:4000], y_train[:4000], epochs=12)
 
 # evaluate on test data
 test_loss = evaluate(x_test[:100], y_test[:100])

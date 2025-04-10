@@ -4,8 +4,8 @@ import random
 
 import matplotlib.pyplot as plt
 
-from mnist_loader import MnistDataloader
-from mnist_loader import paths
+from mnist_nn.mnist_loader import MnistDataloader
+from mnist_nn.mnist_loader import paths
 
 
 # Helper function to show a list of images with their relating titles

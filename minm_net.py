@@ -3,7 +3,7 @@ from array import array
 
 import numpy as np
 
-LEARNING_RATE = 0.04
+LR = 0.04
 
 
 def get_data():
@@ -89,8 +89,8 @@ def relu_bp(input, output_error):
 """The softmax function."""
 
 
-def softmax(input):
-    exp_values = np.exp(input - np.max(input, axis=1, keepdims=True))
+def softmax(x):
+    exp_values = np.exp(x - np.max(x, axis=1, keepdims=True))
     probabilities = exp_values / np.sum(exp_values, axis=1, keepdims=True)
     return probabilities
 
@@ -99,24 +99,17 @@ def softmax(input):
 
 
 def fc_fp(bias, weights, input):
-    input = input
-    output = (
-        np.dot(input, weights) + bias
-    )  # So this is the output(input) i gues the dot product of the input and weights + the bias, makes sense
-    return output
+    return np.dot(input, weights) + bias
 
 
 # computes dE/dW, dE/dB for a given output_error=dE/dY. Returns input_error=dE/dX.
 def fc_bp(bias, weights, input, output_error):
     input_error = np.dot(output_error, weights.T)
     weights_error = np.dot(input.T, output_error)
-    # dBias = output_error
 
     # update parameters
-    weights -= (
-        LEARNING_RATE * weights_error
-    )  # Makes sense the weight becomes itself minus the learning weigt times weight error I guess this is nabla E or so
-    bias -= LEARNING_RATE * output_error
+    weights -= LR * weights_error
+    bias -= LR * output_error
     return input_error
 
 
@@ -124,17 +117,13 @@ def fc_bp(bias, weights, input, output_error):
 
 
 def train(data):
-
-    x_train = data[0]
-    y_train = data[1]
-    samples = len(x_train)
+    samples = len(data[0])
+    loss_print = 0
 
     # training loop
-    err = 0
-    for j in range(samples):
-
-        # forward propagation
-        pixels = x_train[j]
+    for i in range(samples):
+        """forward propagation"""
+        pixels = data[0][i]
 
         z1 = fc_fp(b1, w1, pixels)
         activation1 = relu(z1)
@@ -142,14 +131,14 @@ def train(data):
         z2 = fc_fp(b2, w2, activation1)
         activation2 = relu(z2)
 
-        z3 = fc_fp(b3, w3, activation2)
-        prediction = softmax(z3)
+        logit = fc_fp(b3, w3, activation2)
+        prediction = softmax(logit)
 
         # compute loss (for display purpose only)
-        err = err + mse(y_train[j], prediction)
+        loss_print += mse(data[1][i], prediction)
 
-        # backward propagation
-        error = mse_prime(y_train[j], prediction)
+        """backward propagation"""
+        error = mse_prime(data[1][i], prediction)
 
         # skipping softmax since error isn't changed
         error = fc_bp(b3, w3, activation2, error)
@@ -158,37 +147,32 @@ def train(data):
         error = relu_bp(z1, error)
         error = fc_bp(b1, w1, pixels, error)
 
-        if (j + 1) % round(samples / 10) == 0:
-            err /= samples / 10
+        if (i + 1) % samples / 10 == 0:
+            loss_print /= samples / 10
 
-            print(f"For the sample {j + 1}/{samples}   the error is {err}")
-            err = 0
+            print(f"For the sample {i + 1}/{samples}   the error is {loss_print}")
+            loss_print = 0
 
 
 def evaluate(data):
-
-    images = data[0]
-    labels = data[1]
-
-    samples = len(images)
-    err = 0
+    samples = len(data[0])
+    loss_print = 0
 
     # run network over all samples
     for i in range(samples):
-        # forward propagation
-        pixels = images[i]
+        """forward propagation"""
+        pixels = data[0][i]
 
         output = fc_fp(b1, w1, pixels)
         output = relu(output)
         output = fc_fp(b2, w2, output)
         output = relu(output)
-        output = fc_fp(b3, w3, output)
-        prediction = softmax(output)
+        logit = fc_fp(b3, w3, output)
+        prediction = softmax(logit)
 
-        err_i = mse(labels[i], prediction)
-        err = err + err_i
+        loss_print += mse(data[1][i], prediction)
 
-    print("Test loss:", err / samples)
+    print("Test loss:", loss_print / samples)
 
 
 """Creating Neural Network"""
@@ -204,7 +188,7 @@ b3 = np.random.rand(1, 10) - 0.5
 
 training_data, test_data = get_data()
 
-training_data = (training_data[0][:500], training_data[1][:500])
+training_data = (training_data[0][:5000], training_data[1][:5000])
 
 # train the network
 train(training_data)

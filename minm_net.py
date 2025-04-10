@@ -144,8 +144,8 @@ def train(data):
         error = relu_bp(z1, error)
         error = fc_bp(b1, w1, pixels, error)
 
-        if (i + 1) % samples // 10 == 0:
-            loss_print /= samples // 10
+        if (i + 1) % round(samples / 8) == 0:
+            loss_print /= samples / 8
 
             print(f"For the sample {i + 1}/{samples}   the error is {loss_print}")
             loss_print = 0
@@ -184,8 +184,6 @@ w3 = np.random.rand(50, 10) - 0.5
 b3 = np.random.rand(1, 10) - 0.5
 
 training_data, test_data = get_data()
-
-training_data = (training_data[0][:5000], training_data[1][:5000])
 
 # train the network
 train(training_data)

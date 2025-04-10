@@ -133,15 +133,18 @@ def fit(x_train, y_train, epochs, learning_rate):
     for i in range(epochs):
         err = 0
         for j in range(samples):
-            # forward propagation
-            output = x_train[j]
 
-            output = fc_fp(b1, w1, output)
-            output = relu_fp(output)
-            output = fc_fp(b2, w2, output)
-            output = relu_fp(output)
-            output = fc_fp(b3, w3, output)
-            output = softmax_fp(output)
+            # forward propagation
+            pixels = x_train[j]
+
+            z1 = fc_fp(b1, w1, pixels)
+            activation1 = relu_fp(z1)
+
+            z2 = fc_fp(b2, w2, activation1)
+            activation2 = relu_fp(z2)
+
+            z3 = fc_fp(b3, w3, activation2)
+            output = softmax_fp(z3)
 
             # compute loss (for display purpose only)
             err = err + mse(y_train[j], output)
@@ -150,11 +153,11 @@ def fit(x_train, y_train, epochs, learning_rate):
             error = mse_prime(y_train[j], output)
 
             error = softmax_bp(error)
-            error = fc_bp(b3, w3, output, error, learning_rate)
-            error = relu_bp(output, error)
-            error = fc_bp(b2, w2, output, error, learning_rate)
-            error = relu_bp(output, error)
-            error = fc_bp(b1, w1, output, error, learning_rate)
+            error = fc_bp(b3, w3, activation2, error, learning_rate)
+            error = relu_bp(z2, error)
+            error = fc_bp(b2, w2, activation1, error, learning_rate)
+            error = relu_bp(z1, error)
+            error = fc_bp(b1, w1, pixels, error, learning_rate)
 
         # calculate average error on all samples
         err /= samples

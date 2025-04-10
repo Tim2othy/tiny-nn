@@ -32,43 +32,38 @@ w3 = np.random.rand(50, 10) - 0.5
 b3 = np.random.rand(1, 10) - 0.5
 
 
-samples = len(training_data[0])
-loss_print = 0
-
-for i in range(samples):
+train_loss = 0
+for i in range(60000):
     """forward propagation"""
     pixels = training_data[0][i]
 
-    out_layer1 = np.dot(pixels, w1) + b1
-    out_layer2 = np.dot(out_layer1, w2) + b2
-    out_layer3 = np.dot(out_layer2, w3) + b3
-
-    prediction = softmax(out_layer3)
+    output1 = np.dot(pixels, w1) + b1
+    output2 = np.dot(output1, w2) + b2
+    output3 = np.dot(output2, w3) + b3
+    prediction = softmax(output3)
 
     """backward propagation"""
     error = mse_prime(training_data[1][i], prediction)
-    error = fc_bp(b3, w3, out_layer2, error)
-    error = fc_bp(b2, w2, out_layer1, error)
+    error = fc_bp(b3, w3, output2, error)
+    error = fc_bp(b2, w2, output1, error)
     error = fc_bp(b1, w1, pixels, error)
 
-    loss_print += mse(training_data[1][i], prediction)
+    train_loss += mse(training_data[1][i], prediction)
     if (i + 1) % 12000 == 0:
-
-        print(f"At {i + 1}/{samples}   the error is {loss_print / 12000:.4f}")
-        loss_print = 0
+        print(f"At {i + 1}/{60000}   the error is {train_loss / 12000:.3f}")
+        train_loss = 0
 
 
 test_loss = 0
-
-for i in range(len(test_data[0])):
+for i in range(10000):
     """forward propagation"""
     pixels = test_data[0][i]
 
     output = np.dot(pixels, w1) + b1
     output = np.dot(output, w2) + b2
-    out_layer3 = np.dot(output, w3) + b3
-    prediction = softmax(out_layer3)
+    output = np.dot(output, w3) + b3
+    prediction = softmax(output)
 
     test_loss += mse(test_data[1][i], prediction)
 
-print(f"Test loss: {test_loss / len(test_data[0]):.4f}")
+print(f"Test loss: {test_loss / 10000:.3f}")

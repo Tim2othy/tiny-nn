@@ -34,36 +34,24 @@ def read_images_labels(images_filepath, labels_filepath):
         img = img.reshape(28, 28)
         images[i][:] = img
 
+    images = np.array(images, dtype=np.float32)
+
     return images, labels
 
 
-def load_data():
-    x_train, y_train = read_images_labels(
-        "input/train-images-idx3-ubyte", "input/train-labels-idx1-ubyte"
-    )
-    x_test, y_test = read_images_labels(
-        "input/t10k-images-idx3-ubyte", "input/t10k-labels-idx1-ubyte"
-    )
-    return (x_train, y_train), (x_test, y_test)
+x_train, y_train = read_images_labels(
+    "input/train-images-idx3-ubyte", "input/train-labels-idx1-ubyte"
+)
 
-
-# Load MNIST data
-(x_train, y_train), (x_test, y_test) = load_data()
-
-
-# Convert to numpy arrays first
-x_train = np.array(x_train, dtype=np.float32)
-x_test = np.array(x_test, dtype=np.float32)
-
+x_test, y_test = read_images_labels(
+    "input/t10k-images-idx3-ubyte", "input/t10k-labels-idx1-ubyte"
+)
 
 # Preprocess the training data
 # Reshape to (num_samples, 1, 28*28) and normalize to range [0, 1]
 x_train = x_train.reshape(x_train.shape[0], 1, 28 * 28).astype("float32") / 255
-# Convert labels to one-hot encoding
-y_train = to_categorical(y_train)
-
-# Preprocess the test data
 x_test = x_test.reshape(x_test.shape[0], 1, 28 * 28).astype("float32") / 255
+y_train = to_categorical(y_train)
 y_test = to_categorical(y_test)
 
 
@@ -164,11 +152,6 @@ def mse_prime(y_true, y_pred):
     return 2 * (y_pred - y_true) / y_true.size
 
 
-# add layer to network
-def add(layer):
-    layers.append(layer)
-
-
 #
 # network
 #
@@ -240,12 +223,12 @@ layers = []
 #
 # Create the network
 #
-add(FCLayer(28 * 28, 100))  # input_shape=(1, 28*28)    ;   output_shape=(1, 100)
-add(ReluLayer())
-add(FCLayer(100, 50))  # input_shape=(1, 100)      ;   output_shape=(1, 50)
-add(ReluLayer())
-add(FCLayer(50, 10))  # input_shape=(1, 50)       ;   output_shape=(1, 10)
-add(SoftmaxLayer())
+layers.append(FCLayer(28 * 28, 100))  # input_shape=(1, 28*28);   output_shape=(1, 100)
+layers.append(ReluLayer())
+layers.append(FCLayer(100, 50))  # input_shape=(1, 100)       ;   output_shape=(1, 50)
+layers.append(ReluLayer())
+layers.append(FCLayer(50, 10))  # input_shape=(1, 50)         ;   output_shape=(1, 10)
+layers.append(SoftmaxLayer())
 
 # train the network
 fit(x_train[:4000], y_train[:4000], epochs=12, learning_rate=0.04)

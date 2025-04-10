@@ -2,8 +2,6 @@ import numpy as np
 
 from load_mnist import test_data, training_data
 
-LR = 0.04
-
 
 def mse(y_true, y_pred):
     return np.mean(np.power(y_true - y_pred, 2))
@@ -11,10 +9,6 @@ def mse(y_true, y_pred):
 
 def mse_prime(y_true, y_pred):
     return 2 * (y_pred - y_true) / y_true.size
-
-
-def relu(x):
-    return np.maximum(0, x)
 
 
 def softmax(x):
@@ -31,8 +25,8 @@ def fc_bp(bias, weights, input, output_error):
     input_error = np.dot(output_error, weights.T)
     weights_error = np.dot(input.T, output_error)
 
-    weights -= LR * weights_error
-    bias -= LR * np.sum(output_error, axis=0, keepdims=True)
+    weights -= 0.04 * weights_error
+    bias -= 0.04 * np.sum(output_error, axis=0, keepdims=True)
     return input_error
 
 
@@ -52,10 +46,10 @@ for i in range(samples):
     pixels = training_data[0][i]
 
     z1 = np.dot(pixels, w1) + b1
-    activation1 = relu(z1)
+    activation1 = np.maximum(0, z1)
 
     z2 = np.dot(activation1, w2) + b2
-    activation2 = relu(z2)
+    activation2 = np.maximum(0, z2)
 
     logit = np.dot(activation2, w3) + b3
     prediction = softmax(logit)
@@ -88,9 +82,9 @@ def evaluate(data):
         pixels = data[0][i]
 
         output = np.dot(pixels, w1) + b1
-        output = relu(output)
+        output = np.maximum(0, output)
         output = np.dot(output, w2) + b2
-        output = relu(output)
+        output = np.maximum(0, output)
         logit = np.dot(output, w3) + b3
         prediction = softmax(logit)
 

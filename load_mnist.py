@@ -51,3 +51,8 @@ y_test = to_categorical(y_test)
 
 training_data = (x_train, y_train)
 test_data = (x_test, y_test)
+
+xt = x_train
+xs = x_test
+yt = y_train
+ys = y_test

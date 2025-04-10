@@ -5,6 +5,7 @@ import numpy as np
 
 LEARNING_RATE = 0.04
 EPOCHS = 11
+MINI_BATCH_SIZE = 10
 
 
 def get_data():
@@ -54,7 +55,10 @@ def get_data():
     y_train = to_categorical(y_train)
     y_test = to_categorical(y_test)
 
-    return x_train, y_train, x_test, y_test
+    training_data = (x_train, y_train)
+    test_data = (x_test, y_test)
+
+    return training_data, test_data
 
 
 """Our Loss function and its derivative."""
@@ -121,7 +125,10 @@ def fc_bp(bias, weights, input, output_error):
 """Network functions"""
 
 
-def train(x_train, y_train):
+def train(data, examples):
+
+    x_train = data[0][:examples]
+    y_train = data[1][:examples]
     # sample dimension first
     samples = len(x_train)
 
@@ -162,7 +169,10 @@ def train(x_train, y_train):
             print("For the epoch %d/%d   the error is %f" % (i + 1, EPOCHS, err))
 
 
-def evaluate(images, labels):
+def evaluate(data, examples):
+
+    images = data[0][:examples]
+    labels = data[1][:examples]
 
     samples = len(images)
     err = 0
@@ -196,11 +206,11 @@ b2 = np.random.rand(1, 50) - 0.5
 w3 = np.random.rand(50, 10) - 0.5
 b3 = np.random.rand(1, 10) - 0.5
 
-x_train, y_train, x_test, y_test = get_data()
+training_data, test_data = get_data()
 
 # train the network
-train(x_train[:4000], y_train[:4000])
+train(training_data, 600)
 
 # evaluate on test data
-test_loss = evaluate(x_test[:100], y_test[:100])
+test_loss = evaluate(test_data, 600)
 print("Test loss:", test_loss)

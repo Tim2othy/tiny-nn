@@ -1,5 +1,4 @@
 import numpy as np
-
 from activation_Layer import ActivationLayer
 from layers import FCLayer, SoftmaxLayer, relu, relu_prime
 from losses import mse, mse_prime

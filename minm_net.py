@@ -189,7 +189,7 @@ def evaluate(data):
         err_i = mse(labels[i], prediction)
         err = err + err_i
 
-    return err / samples
+    print("Test loss:", err / samples)
 
 
 """Creating Neural Network"""
@@ -209,5 +209,4 @@ training_data, test_data = get_data()
 train(training_data)
 
 # evaluate on test data
-test_loss = evaluate(test_data)
-print("Test loss:", test_loss)
+evaluate(test_data)

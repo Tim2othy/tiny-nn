@@ -55,6 +55,7 @@ def get_data():
 
 
 LEARNING_RATE = 0.04
+EPOCHS = 20
 
 #
 # Layers
@@ -121,12 +122,12 @@ def mse_prime(y_true, y_pred):
 #
 # network
 #
-def fit(x_train, y_train, epochs):
+def fit(x_train, y_train):
     # sample dimension first
     samples = len(x_train)
 
     # training loop
-    for i in range(epochs):
+    for i in range(EPOCHS):
         err = 0
         for j in range(samples):
 
@@ -158,8 +159,8 @@ def fit(x_train, y_train, epochs):
         # calculate average error on all samples
         err /= samples
 
-        if (i + 1) % round(epochs / 10) == 0 or i == 0:
-            print("For the epoch %d/%d   the error is %f" % (i + 1, epochs, err))
+        if (i + 1) % round(EPOCHS / 10) == 0 or i == 0:
+            print("For the epoch %d/%d   the error is %f" % (i + 1, EPOCHS, err))
 
 
 # predict output for given input
@@ -228,7 +229,7 @@ b3 = np.random.rand(1, 10) - 0.5
 x_train, y_train, x_test, y_test = get_data()
 
 # train the network
-fit(x_train[:4000], y_train[:4000], epochs=12)
+fit(x_train[:4000], y_train[:4000])
 
 # evaluate on test data
 test_loss = evaluate(x_test[:100], y_test[:100])

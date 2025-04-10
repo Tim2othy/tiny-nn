@@ -173,8 +173,15 @@ def predict(input_data):
     for i in range(samples):
         # forward propagation
         output = input_data[i]
-        for layer in layers:
-            output = layer.forward_propagation(output)
+
+        # Manual forward pass
+        output = fc_fp(b1, w1, output)
+        output = relu_fp(output)
+        output = fc_fp(b2, w2, output)
+        output = relu_fp(output)
+        output = fc_fp(b3, w3, output)
+        output = softmax_fp(output)
+
         result.append(output)
 
     return result

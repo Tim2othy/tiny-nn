@@ -74,3 +74,32 @@ class MnistDataloader(object):
             self.test_images_filepath, self.test_labels_filepath
         )
         return (x_train, y_train), (x_test, y_test)
+
+
+def finish_up_data():
+
+    mnist_dataloader = MnistDataloader(
+        paths["train_img"],
+        paths["train_lab"],
+        paths["test_img"],
+        paths["test_lab"],
+    )
+
+    # Load MNIST data
+    (x_train, y_train), (x_test, y_test) = mnist_dataloader.load_data()
+
+    # Convert to numpy arrays first
+    x_train = np.array(x_train, dtype=np.float32)
+    x_test = np.array(x_test, dtype=np.float32)
+
+    # Preprocess the training data
+    # Reshape to (num_samples, 1, 28*28) and normalize to range [0, 1]
+    x_train = x_train.reshape(x_train.shape[0], 1, 28 * 28).astype("float32") / 255
+    # Convert labels to one-hot encoding
+    y_train = to_categorical(y_train)
+
+    # Preprocess the test data
+    x_test = x_test.reshape(x_test.shape[0], 1, 28 * 28).astype("float32") / 255
+    y_test = to_categorical(y_test)
+
+    return x_train, y_train, x_test, y_test

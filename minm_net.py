@@ -4,7 +4,6 @@ from array import array
 import numpy as np
 
 LEARNING_RATE = 0.04
-EPOCHS = 11
 
 
 def get_data():
@@ -131,39 +130,39 @@ def train(data):
     samples = len(x_train)
 
     # training loop
-    for i in range(EPOCHS):
-        err = 0
-        for j in range(samples):
+    err = 0
+    for j in range(samples):
 
-            # forward propagation
-            pixels = x_train[j]
+        # forward propagation
+        pixels = x_train[j]
 
-            z1 = fc_fp(b1, w1, pixels)
-            activation1 = relu(z1)
+        z1 = fc_fp(b1, w1, pixels)
+        activation1 = relu(z1)
 
-            z2 = fc_fp(b2, w2, activation1)
-            activation2 = relu(z2)
+        z2 = fc_fp(b2, w2, activation1)
+        activation2 = relu(z2)
 
-            z3 = fc_fp(b3, w3, activation2)
-            prediction = softmax(z3)
+        z3 = fc_fp(b3, w3, activation2)
+        prediction = softmax(z3)
 
-            # compute loss (for display purpose only)
-            err = err + mse(y_train[j], prediction)
+        # compute loss (for display purpose only)
+        err = err + mse(y_train[j], prediction)
 
-            # backward propagation
-            error = mse_prime(y_train[j], prediction)
+        # backward propagation
+        error = mse_prime(y_train[j], prediction)
 
-            # skipping softmax since error isn't changed
-            error = fc_bp(b3, w3, activation2, error)
-            error = relu_bp(z2, error)
-            error = fc_bp(b2, w2, activation1, error)
-            error = relu_bp(z1, error)
-            error = fc_bp(b1, w1, pixels, error)
+        # skipping softmax since error isn't changed
+        error = fc_bp(b3, w3, activation2, error)
+        error = relu_bp(z2, error)
+        error = fc_bp(b2, w2, activation1, error)
+        error = relu_bp(z1, error)
+        error = fc_bp(b1, w1, pixels, error)
 
-        # calculate average error on all samples
-        err /= samples
+        if (j + 1) % round(samples / 10) == 0:
+            err /= samples / 10
 
-        print(f"For the epoch {i + 1}/{EPOCHS}   the error is {err}")
+            print(f"For the sample {j + 1}/{samples}   the error is {err}")
+            err = 0
 
 
 def evaluate(data):
@@ -204,6 +203,8 @@ w3 = np.random.rand(50, 10) - 0.5
 b3 = np.random.rand(1, 10) - 0.5
 
 training_data, test_data = get_data()
+
+training_data = (training_data[0][:500], training_data[1][:500])
 
 # train the network
 train(training_data)

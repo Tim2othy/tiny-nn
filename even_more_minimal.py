@@ -18,7 +18,6 @@ def softmax(x):
 
 def backprop_fc(bias, weights, input, output_error):
     input_error = np.dot(output_error, weights.T)
-
     weights -= 0.04 * np.dot(input.T, output_error)
     bias -= 0.04 * np.sum(output_error, axis=0, keepdims=True)
     return input_error
@@ -59,7 +58,6 @@ def test():
         prediction = softmax(output)
 
         test_loss += mse(y_test[i], prediction)
-
     print(f"Test loss: {test_loss / 10000:.3f}")
 
 

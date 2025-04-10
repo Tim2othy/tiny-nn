@@ -187,9 +187,7 @@ def predict(input_data):
     return result
 
 
-# evaluate results for some data
 def evaluate(x_test, y_test):
-    # sample dimension first
     samples = len(x_test)
     err = 0
 
@@ -198,33 +196,20 @@ def evaluate(x_test, y_test):
     # run network over all samples
     for i in range(samples):
 
-        example_error = mse(y_test[i], prediction[i])
+        err_i = mse(y_test[i], prediction[i])
 
-        err = err + example_error
+        err = err + err_i
 
     return err / samples
 
 
-layers = []
-
-# Initialize weights and biases
+# Create matrices for learnable parameters
 w1 = np.random.rand(28 * 28, 100) - 0.5
 b1 = np.random.rand(1, 100) - 0.5
 w2 = np.random.rand(100, 50) - 0.5
 b2 = np.random.rand(1, 50) - 0.5
 w3 = np.random.rand(50, 10) - 0.5
 b3 = np.random.rand(1, 10) - 0.5
-
-
-#
-# Create the network
-#
-# layers.append(FCLayer(28 * 28, 100))  # input_shape=(1, 28*28);   output_shape=(1, 100)
-# layers.append(ReluLayer())
-# layers.append(FCLayer(100, 50))  # input_shape=(1, 100)       ;   output_shape=(1, 50)
-# layers.append(ReluLayer())
-# layers.append(FCLayer(50, 10))  # input_shape=(1, 50)         ;   output_shape=(1, 10)
-# layers.append(SoftmaxLayer())
 
 x_train, y_train, x_test, y_test = get_data()
 

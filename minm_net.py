@@ -70,11 +70,24 @@ def mse_prime(y_true, y_pred):
     return 2 * (y_pred - y_true) / y_true.size
 
 
-""" Our activation function relu and its derivative and backward pass"""
+""" Forwardpass for our activation functions and fully connected layer """
 
 
 def relu(x):
     return np.maximum(0, x)
+
+
+def softmax(x):
+    exp_values = np.exp(x - np.max(x, axis=1, keepdims=True))
+    probabilities = exp_values / np.sum(exp_values, axis=1, keepdims=True)
+    return probabilities
+
+
+def fc_fp(bias, weights, input):
+    return np.dot(input, weights) + bias
+
+
+"""Backwardpass for relu and fully connected layer"""
 
 
 def relu_prime(x):
@@ -84,22 +97,6 @@ def relu_prime(x):
 # Returns input_error=dE/dX for a given output_error=dE/dY.
 def relu_bp(input, output_error):
     return relu_prime(input) * output_error
-
-
-"""The softmax function."""
-
-
-def softmax(x):
-    exp_values = np.exp(x - np.max(x, axis=1, keepdims=True))
-    probabilities = exp_values / np.sum(exp_values, axis=1, keepdims=True)
-    return probabilities
-
-
-"""Fully connected layer forward pass and backpropagation."""
-
-
-def fc_fp(bias, weights, input):
-    return np.dot(input, weights) + bias
 
 
 # computes dE/dW, dE/dB for a given output_error=dE/dY. Returns input_error=dE/dX.
@@ -140,15 +137,15 @@ def train(data):
         """backward propagation"""
         error = mse_prime(data[1][i], prediction)
 
-        # skipping softmax since error isn't changed
+        # we can skip softmax
         error = fc_bp(b3, w3, activation2, error)
         error = relu_bp(z2, error)
         error = fc_bp(b2, w2, activation1, error)
         error = relu_bp(z1, error)
         error = fc_bp(b1, w1, pixels, error)
 
-        if (i + 1) % samples / 10 == 0:
-            loss_print /= samples / 10
+        if (i + 1) % samples // 10 == 0:
+            loss_print /= samples // 10
 
             print(f"For the sample {i + 1}/{samples}   the error is {loss_print}")
             loss_print = 0

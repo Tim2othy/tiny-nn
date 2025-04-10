@@ -10,7 +10,7 @@ def s(x):
 def b(b, w, i, u):
     n = np.dot(u, w.T)
     w -= 0.04 * np.dot(i.T, u)
-    b -= 0.04 * np.sum(u, axis=0, keepdims=True)
+    b -= 0.04 * np.sum(u)
     return n
 def f(a,b):return np.random.rand(a,b) - 0.5
 w1,b1,w2,b2,w3,b3 = (f(784, 100), f(1, 100), f(100, 50), f(1, 50), f(50, 10), f(1, 10))

@@ -3,6 +3,9 @@ from array import array
 
 import numpy as np
 
+LEARNING_RATE = 0.04
+EPOCHS = 11
+
 
 def get_data():
 
@@ -54,12 +57,43 @@ def get_data():
     return x_train, y_train, x_test, y_test
 
 
-LEARNING_RATE = 0.04
-EPOCHS = 20
+"""Our Loss function and its derivative."""
 
-#
-# Layers
-#
+
+def mse(y_true, y_pred):
+    return np.mean(np.power(y_true - y_pred, 2))
+
+
+def mse_prime(y_true, y_pred):
+    return 2 * (y_pred - y_true) / y_true.size
+
+
+""" Our activation function relu and its derivative and backward pass"""
+
+
+def relu(x):
+    return np.maximum(0, x)
+
+
+def relu_prime(x):
+    return np.where(x > 0, 1, 0)
+
+
+# Returns input_error=dE/dX for a given output_error=dE/dY.
+def relu_bp(input, output_error):
+    return relu_prime(input) * output_error
+
+
+"""The softmax function."""
+
+
+def softmax(input):
+    exp_values = np.exp(input - np.max(input, axis=1, keepdims=True))
+    probabilities = exp_values / np.sum(exp_values, axis=1, keepdims=True)
+    return probabilities
+
+
+"""Fully connected layer forward pass and backpropagation."""
 
 
 def fc_fp(bias, weights, input):
@@ -84,45 +118,10 @@ def fc_bp(bias, weights, input, output_error):
     return input_error
 
 
-def softmax_fp(input):
-    # Compute the softmax output
-    exp_values = np.exp(input - np.max(input, axis=1, keepdims=True))
-    probabilities = exp_values / np.sum(exp_values, axis=1, keepdims=True)
-    return probabilities
+"""Network functions"""
 
 
-def relu(x):
-    return np.maximum(0, x)
-
-
-def relu_prime(x):
-    return np.where(x > 0, 1, 0)
-
-
-def relu_fp(input):
-    output = relu(input)
-    return output
-
-
-# Returns input_error=dE/dX for a given output_error=dE/dY.
-def relu_bp(input, output_error):
-    return relu_prime(input) * output_error
-
-
-# loss function and its derivative
-def mse(y_true, y_pred):
-
-    return np.mean(np.power(y_true - y_pred, 2))
-
-
-def mse_prime(y_true, y_pred):
-    return 2 * (y_pred - y_true) / y_true.size
-
-
-#
-# network
-#
-def fit(x_train, y_train):
+def train(x_train, y_train):
     # sample dimension first
     samples = len(x_train)
 
@@ -135,19 +134,19 @@ def fit(x_train, y_train):
             pixels = x_train[j]
 
             z1 = fc_fp(b1, w1, pixels)
-            activation1 = relu_fp(z1)
+            activation1 = relu(z1)
 
             z2 = fc_fp(b2, w2, activation1)
-            activation2 = relu_fp(z2)
+            activation2 = relu(z2)
 
             z3 = fc_fp(b3, w3, activation2)
-            output = softmax_fp(z3)
+            prediction = softmax(z3)
 
             # compute loss (for display purpose only)
-            err = err + mse(y_train[j], output)
+            err = err + mse(y_train[j], prediction)
 
             # backward propagation
-            error = mse_prime(y_train[j], output)
+            error = mse_prime(y_train[j], prediction)
 
             # skipping softmax since error isn't changed
             error = fc_bp(b3, w3, activation2, error)
@@ -163,44 +162,30 @@ def fit(x_train, y_train):
             print("For the epoch %d/%d   the error is %f" % (i + 1, EPOCHS, err))
 
 
-# predict output for given input
-def predict(input_data):
-    # sample dimension first
-    samples = len(input_data)
-    result = []
+def evaluate(images, labels):
+
+    samples = len(images)
+    err = 0
 
     # run network over all samples
     for i in range(samples):
         # forward propagation
-        output = input_data[i]
+        pixels = images[i]
 
-        # Manual forward pass
-        output = fc_fp(b1, w1, output)
-        output = relu_fp(output)
+        output = fc_fp(b1, w1, pixels)
+        output = relu(output)
         output = fc_fp(b2, w2, output)
-        output = relu_fp(output)
+        output = relu(output)
         output = fc_fp(b3, w3, output)
-        output = softmax_fp(output)
+        prediction = softmax(output)
 
-        result.append(output)
-
-    return result
-
-
-def evaluate(x_test, y_test):
-    samples = len(x_test)
-    err = 0
-
-    prediction = predict(x_test)
-
-    # run network over all samples
-    for i in range(samples):
-
-        err_i = mse(y_test[i], prediction[i])
-
+        err_i = mse(labels[i], prediction)
         err = err + err_i
 
     return err / samples
+
+
+"""Creating Neural Network"""
 
 
 # Create matrices for learnable parameters
@@ -214,7 +199,7 @@ b3 = np.random.rand(1, 10) - 0.5
 x_train, y_train, x_test, y_test = get_data()
 
 # train the network
-fit(x_train[:4000], y_train[:4000])
+train(x_train[:4000], y_train[:4000])
 
 # evaluate on test data
 test_loss = evaluate(x_test[:100], y_test[:100])

@@ -4,7 +4,72 @@ from array import array
 import numpy as np
 
 
-# Base class
+#
+# Get Data
+#
+def to_categorical(y, num_classes=10):
+    """Convert class vector to binary class matrix (one-hot encoding)"""
+    y = np.array(y, dtype="int")
+    n = y.shape[0]
+    categorical = np.zeros((n, num_classes))
+    categorical[np.arange(n), y] = 1
+    return categorical
+
+
+def read_images_labels(images_filepath, labels_filepath):
+    labels = []
+    with open(labels_filepath, "rb") as file:
+        magic, size = struct.unpack(">II", file.read(8))
+        labels = array("B", file.read())
+
+    with open(images_filepath, "rb") as file:
+        magic, size, rows, cols = struct.unpack(">IIII", file.read(16))
+
+        image_data = array("B", file.read())
+    images = []
+    for i in range(size):
+        images.append([0] * rows * cols)
+    for i in range(size):
+        img = np.array(image_data[i * rows * cols : (i + 1) * rows * cols])
+        img = img.reshape(28, 28)
+        images[i][:] = img
+
+    return images, labels
+
+
+def load_data():
+    x_train, y_train = read_images_labels(
+        "input/train-images-idx3-ubyte", "input/train-labels-idx1-ubyte"
+    )
+    x_test, y_test = read_images_labels(
+        "input/t10k-images-idx3-ubyte", "input/t10k-labels-idx1-ubyte"
+    )
+    return (x_train, y_train), (x_test, y_test)
+
+
+# Load MNIST data
+(x_train, y_train), (x_test, y_test) = load_data()
+
+
+# Convert to numpy arrays first
+x_train = np.array(x_train, dtype=np.float32)
+x_test = np.array(x_test, dtype=np.float32)
+
+
+# Preprocess the training data
+# Reshape to (num_samples, 1, 28*28) and normalize to range [0, 1]
+x_train = x_train.reshape(x_train.shape[0], 1, 28 * 28).astype("float32") / 255
+# Convert labels to one-hot encoding
+y_train = to_categorical(y_train)
+
+# Preprocess the test data
+x_test = x_test.reshape(x_test.shape[0], 1, 28 * 28).astype("float32") / 255
+y_test = to_categorical(y_test)
+
+
+#
+# Layers
+#
 class Layer:
     def __init__(self):
         self.input = None
@@ -99,32 +164,14 @@ def mse_prime(y_true, y_pred):
     return 2 * (y_pred - y_true) / y_true.size
 
 
-# predict output for given input
-def predict(input_data):
-    # sample dimension first
-    samples = len(input_data)
-    result = []
-
-    # run network over all samples
-    for i in range(samples):
-        # forward propagation
-        output = input_data[i]
-        for layer in layers:
-            output = layer.forward_propagation(output)
-        result.append(output)
-
-    return result
-
-
-layers = []
-
-
 # add layer to network
 def add(layer):
     layers.append(layer)
 
 
-# train the network
+#
+# network
+#
 def fit(x_train, y_train, epochs, learning_rate):
     # sample dimension first
     samples = len(x_train)
@@ -153,78 +200,21 @@ def fit(x_train, y_train, epochs, learning_rate):
             print("For the epoch %d/%d   the error is %f" % (i + 1, epochs, err))
 
 
-def to_categorical(y, num_classes=10):
-    """Convert class vector to binary class matrix (one-hot encoding)"""
-    y = np.array(y, dtype="int")
-    n = y.shape[0]
-    categorical = np.zeros((n, num_classes))
-    categorical[np.arange(n), y] = 1
-    return categorical
+# predict output for given input
+def predict(input_data):
+    # sample dimension first
+    samples = len(input_data)
+    result = []
 
+    # run network over all samples
+    for i in range(samples):
+        # forward propagation
+        output = input_data[i]
+        for layer in layers:
+            output = layer.forward_propagation(output)
+        result.append(output)
 
-# MNIST Data Loader Class
-
-
-def read_images_labels(images_filepath, labels_filepath):
-    labels = []
-    with open(labels_filepath, "rb") as file:
-        magic, size = struct.unpack(">II", file.read(8))
-        labels = array("B", file.read())
-
-    with open(images_filepath, "rb") as file:
-        magic, size, rows, cols = struct.unpack(">IIII", file.read(16))
-
-        image_data = array("B", file.read())
-    images = []
-    for i in range(size):
-        images.append([0] * rows * cols)
-    for i in range(size):
-        img = np.array(image_data[i * rows * cols : (i + 1) * rows * cols])
-        img = img.reshape(28, 28)
-        images[i][:] = img
-
-    return images, labels
-
-
-def load_data():
-    x_train, y_train = read_images_labels(
-        "input/train-images-idx3-ubyte", "input/train-labels-idx1-ubyte"
-    )
-    x_test, y_test = read_images_labels(
-        "input/t10k-images-idx3-ubyte", "input/t10k-labels-idx1-ubyte"
-    )
-    return (x_train, y_train), (x_test, y_test)
-
-
-# Load MNIST data
-(x_train, y_train), (x_test, y_test) = load_data()
-
-
-# Convert to numpy arrays first
-x_train = np.array(x_train, dtype=np.float32)
-x_test = np.array(x_test, dtype=np.float32)
-
-
-# Preprocess the training data
-# Reshape to (num_samples, 1, 28*28) and normalize to range [0, 1]
-x_train = x_train.reshape(x_train.shape[0], 1, 28 * 28).astype("float32") / 255
-# Convert labels to one-hot encoding
-y_train = to_categorical(y_train)
-
-# Preprocess the test data
-x_test = x_test.reshape(x_test.shape[0], 1, 28 * 28).astype("float32") / 255
-y_test = to_categorical(y_test)
-
-# Create the network
-add(FCLayer(28 * 28, 100))  # input_shape=(1, 28*28)    ;   output_shape=(1, 100)
-add(ReluLayer())
-add(FCLayer(100, 50))  # input_shape=(1, 100)      ;   output_shape=(1, 50)
-add(ReluLayer())
-add(FCLayer(50, 10))  # input_shape=(1, 50)       ;   output_shape=(1, 10)
-add(SoftmaxLayer())
-
-# train the network
-fit(x_train[:4000], y_train[:4000], epochs=12, learning_rate=0.04)
+    return result
 
 
 # evaluate results for some data
@@ -244,6 +234,21 @@ def evaluate(x_test, y_test):
 
     return err / samples
 
+
+layers = []
+
+#
+# Create the network
+#
+add(FCLayer(28 * 28, 100))  # input_shape=(1, 28*28)    ;   output_shape=(1, 100)
+add(ReluLayer())
+add(FCLayer(100, 50))  # input_shape=(1, 100)      ;   output_shape=(1, 50)
+add(ReluLayer())
+add(FCLayer(50, 10))  # input_shape=(1, 50)       ;   output_shape=(1, 10)
+add(SoftmaxLayer())
+
+# train the network
+fit(x_train[:4000], y_train[:4000], epochs=12, learning_rate=0.04)
 
 # evaluate on test data
 test_loss = evaluate(x_test[:100], y_test[:100])

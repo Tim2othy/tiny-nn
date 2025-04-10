@@ -5,7 +5,6 @@ import numpy as np
 
 LEARNING_RATE = 0.04
 EPOCHS = 11
-MINI_BATCH_SIZE = 10
 
 
 def get_data():
@@ -125,11 +124,10 @@ def fc_bp(bias, weights, input, output_error):
 """Network functions"""
 
 
-def train(data, examples):
+def train(data):
 
-    x_train = data[0][:examples]
-    y_train = data[1][:examples]
-    # sample dimension first
+    x_train = data[0]
+    y_train = data[1]
     samples = len(x_train)
 
     # training loop
@@ -165,14 +163,13 @@ def train(data, examples):
         # calculate average error on all samples
         err /= samples
 
-        if (i + 1) % round(EPOCHS / 10) == 0 or i == 0:
-            print("For the epoch %d/%d   the error is %f" % (i + 1, EPOCHS, err))
+        print(f"For the epoch {i + 1}/{EPOCHS}   the error is {err}")
 
 
-def evaluate(data, examples):
+def evaluate(data):
 
-    images = data[0][:examples]
-    labels = data[1][:examples]
+    images = data[0]
+    labels = data[1]
 
     samples = len(images)
     err = 0
@@ -209,8 +206,8 @@ b3 = np.random.rand(1, 10) - 0.5
 training_data, test_data = get_data()
 
 # train the network
-train(training_data, 600)
+train(training_data)
 
 # evaluate on test data
-test_loss = evaluate(test_data, 600)
+test_loss = evaluate(test_data)
 print("Test loss:", test_loss)

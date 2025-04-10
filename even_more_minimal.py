@@ -16,10 +16,6 @@ def softmax(x):
     return exp_values / np.sum(exp_values, axis=1, keepdims=True)
 
 
-def relu_bp(input, output_error):
-    return np.where(input > 0, 1, 0) * output_error
-
-
 def fc_bp(bias, weights, input, output_error):
     input_error = np.dot(output_error, weights.T)
 
@@ -43,44 +39,35 @@ for i in range(samples):
     """forward propagation"""
     pixels = training_data[0][i]
 
-    z1 = np.dot(pixels, w1) + b1
-    activation1 = np.maximum(0, z1)
+    out_layer1 = np.dot(pixels, w1) + b1
+    out_layer2 = np.dot(out_layer1, w2) + b2
+    out_layer3 = np.dot(out_layer2, w3) + b3
 
-    z2 = np.dot(activation1, w2) + b2
-    activation2 = np.maximum(0, z2)
-
-    logit = np.dot(activation2, w3) + b3
-    prediction = softmax(logit)
+    prediction = softmax(out_layer3)
 
     """backward propagation"""
     error = mse_prime(training_data[1][i], prediction)
-    error = fc_bp(b3, w3, activation2, error)
-    error = relu_bp(z2, error)
-    error = fc_bp(b2, w2, activation1, error)
-    error = relu_bp(z1, error)
+    error = fc_bp(b3, w3, out_layer2, error)
+    error = fc_bp(b2, w2, out_layer1, error)
     error = fc_bp(b1, w1, pixels, error)
 
     loss_print += mse(training_data[1][i], prediction)
-    if (i + 1) % round(samples / 8) == 0:
-        loss_print /= samples / 8
+    if (i + 1) % 12000 == 0:
 
-        print(f"For the sample {i + 1}/{samples}   the error is {loss_print:.4f}")
+        print(f"At {i + 1}/{samples}   the error is {loss_print / 12000:.4f}")
         loss_print = 0
 
 
 test_loss = 0
 
-# run network over all samples
 for i in range(len(test_data[0])):
     """forward propagation"""
     pixels = test_data[0][i]
 
     output = np.dot(pixels, w1) + b1
-    output = np.maximum(0, output)
     output = np.dot(output, w2) + b2
-    output = np.maximum(0, output)
-    logit = np.dot(output, w3) + b3
-    prediction = softmax(logit)
+    out_layer3 = np.dot(output, w3) + b3
+    prediction = softmax(out_layer3)
 
     test_loss += mse(test_data[1][i], prediction)
 

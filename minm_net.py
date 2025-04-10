@@ -88,11 +88,6 @@ def softmax_fp(input):
     return probabilities
 
 
-def softmax_bp(output_error):
-    # Compute the gradient of the softmax function
-    return output_error  # No gradient update needed for softmax layer in this context
-
-
 def relu(x):
     return np.maximum(0, x)
 
@@ -152,7 +147,7 @@ def fit(x_train, y_train, epochs, learning_rate):
             # backward propagation
             error = mse_prime(y_train[j], output)
 
-            error = softmax_bp(error)
+            # skipping softmax since error isn't changed
             error = fc_bp(b3, w3, activation2, error, learning_rate)
             error = relu_bp(z2, error)
             error = fc_bp(b2, w2, activation1, error, learning_rate)

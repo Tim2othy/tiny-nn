@@ -42,8 +42,8 @@ def train():
         error = backprop_fc(b1, w1, pixels, error)
 
         train_loss += mse(y_train[i], prediction)
-        if (i + 1) % 12000 == 0:
-            print(f"At {i + 1}/{60000} the error is {train_loss / 12000:.3f}")
+        if (i + 1) % 7500 == 0:
+            print(f"At {i + 1}/{60000} the error is {train_loss / 7500:.3f}")
             train_loss = 0
 
 

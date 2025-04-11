@@ -1,9 +1,5 @@
 import numpy as n
-
-from load_mnist import xs, xt, ys, yt
-
-
-def p(yt,yp): return 2*(yp-yt)/yt.size
+from load_mnist import xs,xt,ys,yt
 def s(x):
     h=n.exp(x-n.max(x))
     return h/n.sum(h)
@@ -18,11 +14,11 @@ for i in range(t*6):
     o1=n.dot(xt[i],w1)+b1
     o2=n.dot(o1,w2)+b2
     r=s(n.dot(o2,w3)+b3)
-    b(b1,w1,xt[i],b(b2,w2,o1,b(b3,w3,o2,p(yt[i],r))))
+    b(b1,w1,xt[i],b(b2,w2,o1,b(b3,w3,o2,(r-yt[i])/r.size)))
     e+=n.mean((yt[i]-r)**2)
     if (i+1)%t==0:
-        print(f"At {i+1}/{t*6} the error is {e/t:.3f}")
+        print(f"At {i+1}/{t*6} the error is {e/t}")
         e=0
 for i in range(t):
     e+=n.mean((ys[i]-s(n.dot(n.dot(n.dot(xs[i],w1)+b1,w2)+b2,w3)+b3))**2)
-print(f"Test loss: {e/t:.3f}")
+print(f"Test loss: {e/t}")

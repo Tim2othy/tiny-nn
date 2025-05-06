@@ -2,6 +2,7 @@ import struct
 from array import array
 
 import numpy as np
+from torch import Tensor, from_numpy
 
 
 def to_categorical(y, num_classes=10):
@@ -48,6 +49,15 @@ x_train = x_train.reshape(x_train.shape[0], 1, 28 * 28).astype("float32") / 255
 x_test = x_test.reshape(x_test.shape[0], 1, 28 * 28).astype("float32") / 255
 y_train = to_categorical(y_train)
 y_test = to_categorical(y_test)
+
+
+def to_torch(a, b, c, d) -> tuple[Tensor, Tensor, Tensor, Tensor]:
+    a = from_numpy(a).float()
+    b = from_numpy(b).float()
+    c = from_numpy(c).float()
+    d = from_numpy(d).float()
+    return a, b, c, d
+
 
 xt = x_train
 xs = x_test

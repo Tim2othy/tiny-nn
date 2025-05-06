@@ -1,5 +1,5 @@
 # tiny-nn
-[`tiny_net.py`](tiny_net.py) is a very compact, minimal neural net trained on the MNIST dataset, fitting into just 72 lines, while still being neatly formatted. It does this by not using classes and removing almost everything that isn't absolutely necessary. The network only consists of 3 fully connected layers and one softmax layer. It achieves a test accuracy of 98.8%.
+[`tiny_net.py`](tiny_net.py) is a very compact, minimal neural net trained on the MNIST dataset, fitting into just 72 lines, while still being neatly formatted. It does this by not using classes and removing almost everything that isn't absolutely necessary. The network only consists of 3 fully connected layers and one softmax layer. It achieves a test accuracy of 97.8%.
 
 [`tiny_torch.py`](tiny_torch.py) is exactly the same network except it uses the pytorch instead of the numpy library.
 

@@ -55,10 +55,10 @@ def test():
         pixels = x_test[i]
         label = y_test[i]
 
-        output = np.dot(pixels, w1) + b1
-        output = np.dot(output, w2) + b2
-        output = np.dot(output, w3) + b3
-        prediction = softmax(output)
+        output1 = np.dot(pixels, w1) + b1
+        output2 = np.dot(output1, w2) + b2
+        output3 = np.dot(output2, w3) + b3
+        prediction = softmax(output3)
 
         test_loss += mse(label, prediction)
     print(f"Test loss: {test_loss / 10000:.3f}")

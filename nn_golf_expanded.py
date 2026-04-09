@@ -1,4 +1,4 @@
-from numpy import dot, exp, max, mean, random, sum
+from numpy import dot, exp, max, random, sum, maximum, argmax, log
 from load_mnist import xs, xt, ys, yt
 
 D = dot
@@ -39,6 +39,10 @@ for i in range(60000):
         error = 0
 
 for i in range(10000):
-    error += mean((ys[i] - softmax(D(D(D(xs[i], w1) + b1, w2) + b2, w3) + b3)) ** 2)
+    output1 = R(D(xs[i], w1) + b1)
+    output2 = R(D(output1, w2) + b2)
+    output3 = D(output2, w3) + b3
+    prediction = argmax(output3)
+    error += argmax(ys[i]) != prediction
 
 print(f"Test loss: {error/10000}")

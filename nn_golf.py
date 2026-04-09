@@ -4,10 +4,10 @@ D=dot
 R=lambda x:maximum(0,x)
 def B(b,w,i,e):
  g=D(e,w.T)
- w-=0.02*D(i.T, e)
- b-=0.02*sum(e)
+ w-=.02*D(i.T, e)
+ b-=.02*sum(e)
  return g
-I=lambda x,y:random.rand(x,y)-0.5
+I=lambda x,y:random.rand(x,y)-.5
 u,v,w,a,b,c,t,e=(I(784,99),I(99,50),I(50,10),I(1,99),I(1,50),I(1,10),10000,0)
 for i in range(t*6):
  q=R(D(xt[i],u)+a)

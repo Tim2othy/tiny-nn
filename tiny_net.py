@@ -46,12 +46,12 @@ def train():
             train_loss = 0
 
         """backward propagation"""
-        error = mse_prime(label, prediction)
-        error = backprop_fc(b3, w3, output2, error)
-        error *= relu_prime(output2)
-        error = backprop_fc(b2, w2, output1, error)
-        error *= relu_prime(output1)
-        backprop_fc(b1, w1, pixels, error)
+        error_direct = mse_prime(label, prediction)
+        error3 = backprop_fc(b3, w3, output2, error_direct)
+        error3 *= relu_prime(output2)
+        error2 = backprop_fc(b2, w2, output1, error3)
+        error2 *= relu_prime(output1)
+        backprop_fc(b1, w1, pixels, error2)
 
 
 def test():

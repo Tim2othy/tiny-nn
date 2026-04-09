@@ -53,13 +53,14 @@ def test():
     for i in range(10000):
         """forward propagation"""
         pixels = x_test[i]
+        label = y_test[i]
 
         output = np.dot(pixels, w1) + b1
         output = np.dot(output, w2) + b2
         output = np.dot(output, w3) + b3
         prediction = softmax(output)
 
-        test_loss += mse(y_test[i], prediction)
+        test_loss += mse(label, prediction)
     print(f"Test loss: {test_loss / 10000:.3f}")
 
 

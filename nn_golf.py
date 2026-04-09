@@ -9,17 +9,17 @@ def B(b,w,i,u):
     b-=0.04*sum(u)
     return g
 I=lambda a,b:random.rand(a,b)-0.5
-w,v,x,c,d,j,t,e=(I(784,99),I(99,50),I(50,10),I(1,99),I(1,50),I(1,10),10000,0)
+u,v,w,a,b,c,t,e=(I(784,99),I(99,50),I(50,10),I(1,99),I(1,50),I(1,10),10000,0)
 for i in range(t*6):
-    q=R(D(xt[i],w)+c)
-    n=R(D(q,v)+d)
-    s=D(n,x)+j
+    q=R(D(xt[i],u)+a)
+    n=R(D(q,v)+b)
+    s=D(n,w)+c
     r=exp(s-max(s))/sum(exp(s-max(s)))
-    B(c,w,xt[i],B(d,v,q,B(j,x,n,r-yt[i])*P(n))*P(q))
+    B(a,u,xt[i],B(b,v,q,B(c,w,n,r-yt[i])*P(n))*P(q))
     e-=log(r[0,argmax(yt[i])])
     if (i+1)%t==0:
         print(f"At {i+1}/{t*6} the error is {e/t}")
         e=0
 for i in range(t):
-    e+=argmax(ys[i])!=argmax(D(R(D(R(D(xs[i],w)+c),v)+d),x)+j)
+    e+=argmax(ys[i])!=argmax(D(R(D(R(D(xs[i],u)+a),v)+b),w)+c)
 print(f"Test loss: {e/t}")

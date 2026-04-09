@@ -1,4 +1,4 @@
-from numpy import dot,exp,max,mean,random,sum
+from numpy import dot,exp,max,random,sum,argmax,log
 from load_mnist import xs,xt,ys,yt
 p=dot
 def b(b,w,i,u):
@@ -14,7 +14,7 @@ for i in range(t*6):
     s=p(n,x)+j
     r=exp(s-max(s))/sum(exp(s-max(s)))
     b(c,w,xt[i],b(d,v,q,b(j,x,n,(r-yt[i])/10)))
-    e+=mean((yt[i]-r)**2)
+    e-=log(r[0,argmax(yt[i])])
     if (i+1)%t==0:
         print(f"At {i+1}/{t*6} the error is {e/t}")
         e=0

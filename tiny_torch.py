@@ -33,6 +33,7 @@ def train():
     for i in range(60000):
         """forward propagation"""
         pixels = x_train[i]
+        label = y_train[i]
 
         output1 = relu(to.matmul(pixels, w1) + b1)
         output2 = relu(to.matmul(output1, w2) + b2)
@@ -40,14 +41,14 @@ def train():
         prediction = softmax(output3)
 
         """backward propagation"""
-        error = prediction - y_train[i]
-        error = backprop_fc(b3, w3, output2, error)
-        error *= relu_prime(output2)
-        error = backprop_fc(b2, w2, output1, error)
-        error *= relu_prime(output1)
-        error = backprop_fc(b1, w1, pixels, error)
+        error_direct = prediction - label
+        error3 = backprop_fc(b3, w3, output2, error_direct)
+        error3 *= relu_prime(output2)
+        error2 = backprop_fc(b2, w2, output1, error3)
+        error2 *= relu_prime(output1)
+        backprop_fc(b1, w1, pixels, error2)
 
-        train_loss += cross_entropy(y_train[i], prediction)
+        train_loss += cross_entropy(label, prediction)
         if (i + 1) % 7500 == 0:
             print(f"At {i + 1}/{60000} the error is {train_loss / 7500:.3f}")
             train_loss = 0
@@ -58,12 +59,13 @@ def test():
     for i in range(10000):
         """forward propagation"""
         pixels = x_test[i]
+        label = y_test[i]
 
-        output = relu(to.matmul(pixels, w1) + b1)
-        output = relu(to.matmul(output, w2) + b2)
-        prediction = to.matmul(output, w3) + b3
+        output1 = relu(to.matmul(pixels, w1) + b1)
+        output2 = relu(to.matmul(output1, w2) + b2)
+        prediction = to.matmul(output2, w3) + b3
 
-        test_loss += test_error_rate(y_test[i], prediction)
+        test_loss += test_error_rate(label, prediction)
     print(f"Test loss: {test_loss / 10000:.3f}")
 
 lr = 0.02

@@ -15,6 +15,7 @@ def softmax(x) -> np.ndarray:
     exp_values = np.exp(x - np.max(x, axis=1, keepdims=True))
     return exp_values / np.sum(exp_values, axis=1, keepdims=True)
 
+fp = lambda input, w, b: np.dot(input, w) + b
 
 def backprop_fc(bias, weights, input, output_error) -> float:
     input_error = np.dot(output_error, weights.T)
@@ -30,9 +31,9 @@ def train():
         pixels = x_train[i]
         label = y_train[i]
 
-        output1 = np.dot(pixels, w1) + b1
-        output2 = np.dot(output1, w2) + b2
-        output3 = np.dot(output2, w3) + b3
+        output1 = fp(pixels, w1, b1)
+        output2 = fp(output1, w2, b2)
+        output3 = fp(output2, w3, b3)
         prediction = softmax(output3)
 
         train_loss += mse(label, prediction)
@@ -55,9 +56,9 @@ def test():
         pixels = x_test[i]
         label = y_test[i]
 
-        output1 = np.dot(pixels, w1) + b1
-        output2 = np.dot(output1, w2) + b2
-        output3 = np.dot(output2, w3) + b3
+        output1 = fp(pixels, w1, b1)
+        output2 = fp(output1, w2, b2)
+        output3 = fp(output2, w3, b3)
         prediction = softmax(output3)
 
         test_loss += mse(label, prediction)

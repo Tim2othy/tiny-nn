@@ -3,22 +3,22 @@ from load_mnist import xs,xt,ys,yt
 D=dot
 R=lambda x:maximum(0,x)
 def B(b,w,i,e):
-    g=D(e,w.T)
-    w-=0.02*D(i.T, e)
-    b-=0.02*sum(e)
-    return g
+ g=D(e,w.T)
+ w-=0.02*D(i.T, e)
+ b-=0.02*sum(e)
+ return g
 I=lambda x,y:random.rand(x,y)-0.5
 u,v,w,a,b,c,t,e=(I(784,99),I(99,50),I(50,10),I(1,99),I(1,50),I(1,10),10000,0)
 for i in range(t*6):
-    q=R(D(xt[i],u)+a)
-    n=R(D(q,v)+b)
-    s=D(n,w)+c
-    r=exp(s-max(s))/sum(exp(s-max(s)))
-    B(a,u,xt[i],(q>0)*B(b,v,q,(n>0)*B(c,w,n,r-yt[i])))
-    e-=log(r[0,argmax(yt[i])])
-    if (i+1)%t==0:
-        print(f"At {i+1}/{t*6} the error is {e/t}")
-        e=0
+ q=R(D(xt[i],u)+a)
+ n=R(D(q,v)+b)
+ s=D(n,w)+c
+ r=exp(s-max(s))/sum(exp(s-max(s)))
+ B(a,u,xt[i],(q>0)*B(b,v,q,(n>0)*B(c,w,n,r-yt[i])))
+ e-=log(r[0,argmax(yt[i])])
+ if (i+1)%t==0:
+  print(f"At {i+1}/{t*6} the error is {e/t}")
+  e=0
 for i in range(t):
-    e+=argmax(ys[i])!=argmax(D(R(D(R(D(xs[i],u)+a),v)+b),w)+c)
+ e+=argmax(ys[i])!=argmax(D(R(D(R(D(xs[i],u)+a),v)+b),w)+c)
 print(f"Test loss: {e/t}")

@@ -3,20 +3,20 @@ import numpy as np
 from load_mnist import x_test, x_train, y_test, y_train
 
 
-def mse(y_true, y_pred):
+def mse(y_true, y_pred) -> float:
     return np.mean(np.power(y_true - y_pred, 2))
 
 
-def mse_prime(y_true, y_pred):
+def mse_prime(y_true, y_pred) -> float:
     return 2 * (y_pred - y_true) / y_true.size
 
 
-def softmax(x):
+def softmax(x) -> np.ndarray:
     exp_values = np.exp(x - np.max(x, axis=1, keepdims=True))
     return exp_values / np.sum(exp_values, axis=1, keepdims=True)
 
 
-def backprop_fc(bias, weights, input, output_error):
+def backprop_fc(bias, weights, input, output_error) -> float:
     input_error = np.dot(output_error, weights.T)
     weights -= 0.04 * np.dot(input.T, output_error)
     bias -= 0.04 * np.sum(output_error, axis=0, keepdims=True)

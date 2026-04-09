@@ -22,11 +22,17 @@ error = 0
 
 
 for i in range(60000):
-    q = D(xt[i], w1) + b1
-    n = D(q, w2) + b2
-    r = softmax(D(n, w3) + b3)
-    b(b1, w1, xt[i], b(b2, w2, q, b(b3, w3, n, (r - yt[i]) / r.size)))
-    error += mean((yt[i] - r) ** 2)
+    output1 = D(xt[i], w1) + b1
+    output2 = D(output1, w2) + b2
+    output3 = D(output2, w3) + b3
+    prediction = softmax(output3)
+
+    error1 = (prediction - yt[i]) / prediction.size
+    error2 = b(b3, w3, output2, error1)
+    error3 = b(b2, w2, output1, error2)
+    b(b1, w1, xt[i], error3)
+
+    error += mean((yt[i] - prediction) ** 2)
 
     if (i + 1) % 10000 == 0:
         print(f"At {i+1}/{60000} the error is {error/10000}")

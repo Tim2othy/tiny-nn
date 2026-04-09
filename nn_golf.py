@@ -2,7 +2,6 @@ from numpy import dot,exp,max,random,sum,maximum,argmax,log
 from load_mnist import xs,xt,ys,yt
 D=dot
 R=lambda x:maximum(0,x)
-P=lambda x:(x>0)
 def B(b,w,i,u):
     g=D(u,w.T)
     w-=0.04*D(i.T,u)
@@ -15,7 +14,7 @@ for i in range(t*6):
     n=R(D(q,v)+b)
     s=D(n,w)+c
     r=exp(s-max(s))/sum(exp(s-max(s)))
-    B(a,u,xt[i],B(b,v,q,B(c,w,n,r-yt[i])*P(n))*P(q))
+    B(a,u,xt[i],B(b,v,q,B(c,w,n,r-yt[i])*(n>0))*(q>0))
     e-=log(r[0,argmax(yt[i])])
     if (i+1)%t==0:
         print(f"At {i+1}/{t*6} the error is {e/t}")

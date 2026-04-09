@@ -27,15 +27,15 @@ for i in range(60000):
     output3 = D(output2, w3) + b3
     prediction = exp(output3 - max(output3)) / sum(exp(output3 - max(output3)))
 
-    error1 = (prediction - yt[i]) / prediction.size
+    error1 = prediction - yt[i]
     error2 = b(b3, w3, output2, error1) * (output2 > 0)
     error3 = b(b2, w2, output1, error2) * (output1 > 0)
     b(b1, w1, xt[i], error3)
 
-    error += mean((yt[i] - prediction) ** 2)
+    error -= log(prediction[0, argmax(yt[i])])
 
     if (i + 1) % 10000 == 0:
-        print(f"At {i+1}/{60000} the error is {error/10000}")
+        print(f"At {i + 1}/{60000} the error is {error/10000}")
         error = 0
 
 for i in range(10000):

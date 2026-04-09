@@ -28,6 +28,7 @@ def train():
     for i in range(60000):
         """forward propagation"""
         pixels = x_train[i]
+        label = y_train[i]
 
         output1 = np.dot(pixels, w1) + b1
         output2 = np.dot(output1, w2) + b2
@@ -35,12 +36,12 @@ def train():
         prediction = softmax(output3)
 
         """backward propagation"""
-        error = mse_prime(y_train[i], prediction)
+        error = mse_prime(label, prediction)
         error = backprop_fc(b3, w3, output2, error)
         error = backprop_fc(b2, w2, output1, error)
         error = backprop_fc(b1, w1, pixels, error)
 
-        train_loss += mse(y_train[i], prediction)
+        train_loss += mse(label, prediction)
         if (i + 1) % 7500 == 0:
             print(f"At {i + 1}/{60000} the error is {train_loss / 7500:.3f}")
             train_loss = 0

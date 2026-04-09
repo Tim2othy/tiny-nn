@@ -13,7 +13,7 @@ for i in range(t*6):
     n=p(q,v)+d
     s=p(n,x)+j
     r=exp(s-max(s))/sum(exp(s-max(s)))
-    b(c,w,xt[i],b(d,v,q,b(j,x,n,(r-yt[i])/r.size)))
+    b(c,w,xt[i],b(d,v,q,b(j,x,n,(r-yt[i])/10)))
     e+=mean((yt[i]-r)**2)
     if (i+1)%t==0:
         print(f"At {i+1}/{t*6} the error is {e/t}")

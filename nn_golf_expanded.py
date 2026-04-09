@@ -6,8 +6,8 @@ D = dot
 
 def b(bias, weights, input, output_error):
     g = D(output_error, weights.T)
-    weights -= 0.04 * D(input.T, output_error)
-    bias -= 0.04 * sum(output_error)
+    weights -= 0.02 * D(input.T, output_error)
+    bias -= 0.02 * sum(output_error)
     return g
 
 

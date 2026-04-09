@@ -1,38 +1,38 @@
 from numpy import dot, exp, max, mean, random, sum
 from load_mnist import xs, xt, ys, yt
 
-s = lambda x: exp(x - max(x)) / sum(exp(x - max(x)))
+softmax = lambda x: exp(x - max(x)) / sum(exp(x - max(x)))
 
 
-def b(b, w, i, u):
-    g = dot(u, w.T)
-    w -= 0.04 * dot(i.T, u)
-    b -= 0.04 * sum(u)
+def b(bias, weights, input, output_error):
+    g = dot(output_error, weights.T)
+    weights -= 0.04 * dot(input.T, output_error)
+    bias -= 0.04 * sum(output_error)
     return g
 
 
-w = random.rand(28 * 28, 100) - 0.5
-c = random.rand(1, 100) - 0.5
-v = random.rand(100, 50) - 0.5
-d = random.rand(1, 50) - 0.5
-x = random.rand(50, 10) - 0.5
-j = random.rand(1, 10) - 0.5
+w1 = random.rand(28 * 28, 100) - 0.5
+b1 = random.rand(1, 100) - 0.5
+w2 = random.rand(100, 50) - 0.5
+b2 = random.rand(1, 50) - 0.5
+w3 = random.rand(50, 10) - 0.5
+b3 = random.rand(1, 10) - 0.5
 t = 10000
-e = 0
+error = 0
 
 
 for i in range(t * 6):
-    q = dot(xt[i], w) + c
-    n = dot(q, v) + d
-    r = s(dot(n, x) + j)
-    b(c, w, xt[i], b(d, v, q, b(j, x, n, (r - yt[i]) / r.size)))
-    e += mean((yt[i] - r) ** 2)
+    q = dot(xt[i], w1) + b1
+    n = dot(q, w2) + b2
+    r = softmax(dot(n, w3) + b3)
+    b(b1, w1, xt[i], b(b2, w2, q, b(b3, w3, n, (r - yt[i]) / r.size)))
+    error += mean((yt[i] - r) ** 2)
 
     if (i + 1) % t == 0:
-        print(f"At {i+1}/{t*6} the error is {e/t}")
-        e = 0
+        print(f"At {i+1}/{t*6} the error is {error/t}")
+        error = 0
 
 for i in range(t):
-    e += mean((ys[i] - s(dot(dot(dot(xs[i], w) + c, v) + d, x) + j)) ** 2)
+    error += mean((ys[i] - softmax(dot(dot(dot(xs[i], w1) + b1, w2) + b2, w3) + b3)) ** 2)
 
-print(f"Test loss: {e/t}")
+print(f"Test loss: {error/t}")

@@ -13,7 +13,7 @@ for i in range(t*6):
  q=R(D(xt[i],u)+a)
  n=R(D(q,v)+b)
  s=D(n,w)+c
- r=exp(s-max(s))/sum(exp(s-max(s)))
+ r=exp(m:=s-max(s))/sum(exp(m))
  B(a,u,xt[i],(q>0)*B(b,v,q,(n>0)*B(c,w,n,r-yt[i])))
  e-=log(r[0,argmax(yt[i])])
  if-~i%t<1:

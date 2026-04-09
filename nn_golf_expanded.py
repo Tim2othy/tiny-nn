@@ -11,18 +11,16 @@ def b(b, w, i, u):
     return g
 
 
-f = lambda a, b: random.rand(a, b) - 0.5
+w = random.rand(28 * 28, 100) - 0.5
+c = random.rand(1, 100) - 0.5
+v = random.rand(100, 50) - 0.5
+d = random.rand(1, 50) - 0.5
+x = random.rand(50, 10) - 0.5
+j = random.rand(1, 10) - 0.5
+t = 10000
+e = 0
 
-w, c, v, d, x, j, t, e = (
-    f(784, 100),
-    f(1, 100),
-    f(100, 50),
-    f(1, 50),
-    f(50, 10),
-    f(1, 10),
-    10000,
-    0,
-)
+
 for i in range(t * 6):
     q = dot(xt[i], w) + c
     n = dot(q, v) + d

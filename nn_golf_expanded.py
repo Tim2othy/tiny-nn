@@ -2,6 +2,7 @@ from numpy import dot, exp, max, mean, random, sum
 from load_mnist import xs, xt, ys, yt
 
 D = dot
+R = lambda x: maximum(0, x)
 
 def b(bias, weights, input, output_error):
     g = D(output_error, weights.T)
@@ -21,14 +22,14 @@ error = 0
 
 
 for i in range(60000):
-    output1 = D(xt[i], w1) + b1
-    output2 = D(output1, w2) + b2
+    output1 = R(D(xt[i], w1) + b1)
+    output2 = R(D(output1, w2) + b2)
     output3 = D(output2, w3) + b3
     prediction = exp(output3 - max(output3)) / sum(exp(output3 - max(output3)))
 
     error1 = (prediction - yt[i]) / prediction.size
-    error2 = b(b3, w3, output2, error1)
-    error3 = b(b2, w2, output1, error2)
+    error2 = b(b3, w3, output2, error1) * (output2 > 0)
+    error3 = b(b2, w2, output1, error2) * (output1 > 0)
     b(b1, w1, xt[i], error3)
 
     error += mean((yt[i] - prediction) ** 2)

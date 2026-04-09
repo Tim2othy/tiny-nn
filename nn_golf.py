@@ -1,6 +1,5 @@
 from numpy import dot,exp,max,mean,random,sum
 from load_mnist import xs,xt,ys,yt
-s = lambda x: exp(x - max(x)) / sum(exp(x - max(x)))
 def b(b,w,i,u):
     g=dot(u,w.T)
     w-=0.04*dot(i.T,u)
@@ -11,7 +10,8 @@ w,c,v,d,x,j,t,e=(f(784,100),f(1,100),f(100,50),f(1,50),f(50,10),f(1,10),10000,0)
 for i in range(t*6):
     q=dot(xt[i],w)+c
     n=dot(q,v)+d
-    r=s(dot(n,x)+j)
+    s=dot(n,x)+j
+    r=exp(s-max(s))/sum(exp(s-max(s)))
     b(c,w,xt[i],b(d,v,q,b(j,x,n,(r-yt[i])/r.size)))
     e+=mean((yt[i]-r)**2)
     if (i+1)%t==0:

@@ -7,6 +7,10 @@ def mse(y_true, y_pred) -> float:
     return np.mean(np.power(y_true - y_pred, 2))
 
 
+def test_error_rate(y_true, y_pred):
+    return np.argmax(y_true) != np.argmax(y_pred)
+
+
 def mse_prime(y_true, y_pred) -> float:
     return 2 * (y_pred - y_true) / y_true.size
 
@@ -63,10 +67,9 @@ def test():
 
         output1 = relu(np.dot(pixels, w1) + b1)
         output2 = relu(np.dot(output1, w2) + b2)
-        output3 = np.dot(output2, w3) + b3
-        prediction = softmax(output3)
+        prediction = np.dot(output2, w3) + b3
 
-        test_loss += mse(label, prediction)
+        test_loss += test_error_rate(label, prediction)
     print(f"Test loss: {test_loss / 10000:.3f}")
 
 

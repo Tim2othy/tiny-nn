@@ -1,7 +1,6 @@
 from numpy import dot, exp, max, mean, random, sum
 from load_mnist import xs, xt, ys, yt
 
-softmax = lambda x: exp(x - max(x)) / sum(exp(x - max(x)))
 D = dot
 
 def b(bias, weights, input, output_error):
@@ -25,7 +24,7 @@ for i in range(60000):
     output1 = D(xt[i], w1) + b1
     output2 = D(output1, w2) + b2
     output3 = D(output2, w3) + b3
-    prediction = softmax(output3)
+    prediction = exp(output3 - max(output3)) / sum(exp(output3 - max(output3)))
 
     error1 = (prediction - yt[i]) / prediction.size
     error2 = b(b3, w3, output2, error1)

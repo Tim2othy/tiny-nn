@@ -2,12 +2,12 @@ from numpy import dot,exp,max,random,sum,maximum,argmax,log
 from load_mnist import xs,xt,ys,yt
 D=dot
 R=lambda x:maximum(0,x)
-def B(b,w,i,u):
-    g=D(u,w.T)
-    w-=0.04*D(i.T,u)
-    b-=0.04*sum(u)
+def B(b,w,i,e):
+    g=D(e,w.T)
+    w-=0.04*D(i.T,e)
+    b-=0.04*sum(e)
     return g
-I=lambda a,b:random.rand(a,b)-0.5
+I=lambda x,y:random.rand(x,y)-0.5
 u,v,w,a,b,c,t,e=(I(784,99),I(99,50),I(50,10),I(1,99),I(1,50),I(1,10),10000,0)
 for i in range(t*6):
     q=R(D(xt[i],u)+a)

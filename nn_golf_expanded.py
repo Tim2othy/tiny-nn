@@ -12,10 +12,10 @@ def b(bias, weights, input, output_error):
 
 
 w1 = random.rand(28 * 28, 100) - 0.5
-b1 = random.rand(1, 100) - 0.5
 w2 = random.rand(100, 50) - 0.5
-b2 = random.rand(1, 50) - 0.5
 w3 = random.rand(50, 10) - 0.5
+b1 = random.rand(1, 100) - 0.5
+b2 = random.rand(1, 50) - 0.5
 b3 = random.rand(1, 10) - 0.5
 
 error = 0

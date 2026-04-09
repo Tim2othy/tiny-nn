@@ -3,16 +3,12 @@ import numpy as np
 from load_mnist import x_test, x_train, y_test, y_train
 
 
-def mse(y_true, y_pred) -> float:
-    return np.mean(np.power(y_true - y_pred, 2))
+def cross_entropy(y_true, y_pred) -> float:
+    return -np.log(y_pred[0, np.argmax(y_true)])
 
 
 def test_error_rate(y_true, y_pred):
     return np.argmax(y_true) != np.argmax(y_pred)
-
-
-def mse_prime(y_true, y_pred) -> float:
-    return 2 * (y_pred - y_true) / y_true.size
 
 
 relu = lambda x: np.maximum(0, x)
@@ -43,14 +39,14 @@ def train():
         output3 = np.dot(output2, w3) + b3
         prediction = softmax(output3)
 
-        train_loss += mse(label, prediction)
+        train_loss += cross_entropy(label, prediction)
 
         if (i + 1) % 7500 == 0:
             print(f"At {i + 1}/{60000} the error is {train_loss / 7500:.3f}")
             train_loss = 0
 
         """backward propagation"""
-        error_direct = mse_prime(label, prediction)
+        error_direct = prediction - label
         error3 = backprop_fc(b3, w3, output2, error_direct)
         error3 *= relu_prime(output2)
         error2 = backprop_fc(b2, w2, output1, error3)

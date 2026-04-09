@@ -4,7 +4,7 @@ D=dot
 R=lambda x:x*(x>0)
 def B(b,w,i,e):
  g=D(e,w.T)
- w-=.02*D(i.T, e)
+ w-=.02*D(i.T,e)
  b-=.02*sum(e)
  return g
 I=lambda x,y:random.rand(x,y)-.5

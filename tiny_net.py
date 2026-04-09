@@ -15,13 +15,13 @@ def softmax(x) -> np.ndarray:
     exp_values = np.exp(x - np.max(x, axis=1, keepdims=True))
     return exp_values / np.sum(exp_values, axis=1, keepdims=True)
 
-fp = lambda input, w, b: np.dot(input, w) + b
+fp = lambda input, w, b: np.maximum(0, np.dot(input, w) + b)
 
 def backprop_fc(bias, weights, input, output_error) -> float:
     input_error = np.dot(output_error, weights.T)
     weights -= 0.04 * np.dot(input.T, output_error)
     bias -= 0.04 * np.sum(output_error, axis=0, keepdims=True)
-    return input_error
+    return input_error * (input > 0).astype(float)
 
 
 def train():

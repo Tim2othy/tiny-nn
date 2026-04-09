@@ -17,22 +17,22 @@ w2 = random.rand(100, 50) - 0.5
 b2 = random.rand(1, 50) - 0.5
 w3 = random.rand(50, 10) - 0.5
 b3 = random.rand(1, 10) - 0.5
-t = 10000
+
 error = 0
 
 
-for i in range(t * 6):
+for i in range(60000):
     q = dot(xt[i], w1) + b1
     n = dot(q, w2) + b2
     r = softmax(dot(n, w3) + b3)
     b(b1, w1, xt[i], b(b2, w2, q, b(b3, w3, n, (r - yt[i]) / r.size)))
     error += mean((yt[i] - r) ** 2)
 
-    if (i + 1) % t == 0:
-        print(f"At {i+1}/{t*6} the error is {error/t}")
+    if (i + 1) % 10000 == 0:
+        print(f"At {i+1}/{60000} the error is {error/10000}")
         error = 0
 
-for i in range(t):
+for i in range(10000):
     error += mean((ys[i] - softmax(dot(dot(dot(xs[i], w1) + b1, w2) + b2, w3) + b3)) ** 2)
 
-print(f"Test loss: {error/t}")
+print(f"Test loss: {error/10000}")

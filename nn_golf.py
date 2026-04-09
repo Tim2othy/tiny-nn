@@ -1,14 +1,12 @@
 from numpy import dot,exp,max,mean,random,sum
 from load_mnist import xs,xt,ys,yt
-def s(x):
-    h=exp(x-max(x))
-    return h/sum(h)
+s = lambda x: exp(x - max(x)) / sum(exp(x - max(x)))
 def b(b,w,i,u):
     g=dot(u,w.T)
     w-=0.04*dot(i.T,u)
     b-=0.04*sum(u)
     return g
-def f(a,b):return random.rand(a,b)-0.5
+f = lambda a, b: random.rand(a, b) - 0.5
 w,c,v,d,x,j,t,e=(f(784,100),f(1,100),f(100,50),f(1,50),f(50,10),f(1,10),10000,0)
 for i in range(t*6):
     q=dot(xt[i],w)+c

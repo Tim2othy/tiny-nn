@@ -1,7 +1,7 @@
-from numpy import dot,exp,max,random,sum,maximum,argmax,log
+from numpy import dot,exp,max,random,sum,argmax,log
 from load_mnist import xs,xt,ys,yt
 D=dot
-R=lambda x:maximum(0,x)
+R=lambda x:x*(x>0)
 def B(b,w,i,e):
  g=D(e,w.T)
  w-=.02*D(i.T, e)

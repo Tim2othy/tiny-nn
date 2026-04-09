@@ -19,5 +19,5 @@ for i in range(t*6):
         print(f"At {i+1}/{t*6} the error is {e/t}")
         e=0
 for i in range(t):
-    e+=mean((ys[i]-s(p(p(p(xs[i],w)+c,v)+d,x)+j))**2)
+    e+=argmax(ys[i])!=argmax(p(p(p(xs[i],w)+c,v)+d,x)+j)
 print(f"Test loss: {e/t}")

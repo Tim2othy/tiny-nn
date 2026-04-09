@@ -9,7 +9,7 @@ def B(b,w,i,u):
     b-=0.04*sum(u)
     return g
 I=lambda a,b:random.rand(a,b)-0.5
-w,c,v,d,x,j,t,e=(I(784,99),I(1,99),I(99,50),I(1,50),I(50,10),I(1,10),10000,0)
+w,v,x,c,d,j,t,e=(I(784,99),I(99,50),I(50,10),I(1,99),I(1,50),I(1,10),10000,0)
 for i in range(t*6):
     q=R(D(xt[i],w)+c)
     n=R(D(q,v)+d)

@@ -11,17 +11,21 @@ def mse_prime(y_true, y_pred) -> float:
     return 2 * (y_pred - y_true) / y_true.size
 
 
+relu = lambda x: np.maximum(0, x)
+relu_prime = lambda x: (x > 0).astype(float)
+
+
 def softmax(x) -> np.ndarray:
     exp_values = np.exp(x - np.max(x, axis=1, keepdims=True))
     return exp_values / np.sum(exp_values, axis=1, keepdims=True)
 
-fp = lambda input, w, b: np.maximum(0, np.dot(input, w) + b)
+fp = lambda input, w, b: np.dot(input, w) + b
 
 def backprop_fc(bias, weights, input, output_error) -> float:
     input_error = np.dot(output_error, weights.T)
     weights -= 0.04 * np.dot(input.T, output_error)
     bias -= 0.04 * np.sum(output_error, axis=0, keepdims=True)
-    return input_error * (input > 0).astype(float)
+    return input_error
 
 
 def train():
@@ -31,8 +35,8 @@ def train():
         pixels = x_train[i]
         label = y_train[i]
 
-        output1 = fp(pixels, w1, b1)
-        output2 = fp(output1, w2, b2)
+        output1 = relu(fp(pixels, w1, b1))
+        output2 = relu(fp(output1, w2, b2))
         output3 = fp(output2, w3, b3)
         prediction = softmax(output3)
 
@@ -45,7 +49,9 @@ def train():
         """backward propagation"""
         error = mse_prime(label, prediction)
         error = backprop_fc(b3, w3, output2, error)
+        error *= relu_prime(output2)
         error = backprop_fc(b2, w2, output1, error)
+        error *= relu_prime(output1)
         backprop_fc(b1, w1, pixels, error)
 
 
@@ -56,8 +62,8 @@ def test():
         pixels = x_test[i]
         label = y_test[i]
 
-        output1 = fp(pixels, w1, b1)
-        output2 = fp(output1, w2, b2)
+        output1 = relu(fp(pixels, w1, b1))
+        output2 = relu(fp(output1, w2, b2))
         output3 = fp(output2, w3, b3)
         prediction = softmax(output3)
 

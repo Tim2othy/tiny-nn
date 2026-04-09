@@ -45,7 +45,7 @@ def train():
         error = mse_prime(label, prediction)
         error = backprop_fc(b3, w3, output2, error)
         error = backprop_fc(b2, w2, output1, error)
-        error = backprop_fc(b1, w1, pixels, error)
+        backprop_fc(b1, w1, pixels, error)
 
 
 def test():

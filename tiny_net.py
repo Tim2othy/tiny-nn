@@ -22,8 +22,8 @@ def softmax(x) -> np.ndarray:
 
 def backprop_fc(bias, weights, input, output_error) -> float:
     input_error = np.dot(output_error, weights.T)
-    weights -= 0.04 * np.dot(input.T, output_error)
-    bias -= 0.04 * np.sum(output_error, axis=0, keepdims=True)
+    weights -= lr * np.dot(input.T, output_error)
+    bias -= lr * np.sum(output_error, axis=0, keepdims=True)
     return input_error
 
 
@@ -68,6 +68,7 @@ def test():
         test_loss += test_error_rate(label, prediction)
     print(f"Test loss: {test_loss / 10000:.3f}")
 
+lr = 0.02
 
 w1 = np.random.rand(28 * 28, 100) - 0.5
 b1 = np.random.rand(1, 100) - 0.5

@@ -1,25 +1,25 @@
 from numpy import dot,exp,max,random,sum,maximum,argmax,log
 from load_mnist import xs,xt,ys,yt
-p=dot
-o=lambda x:maximum(0,x)
-k=lambda x:(x>0)
-def b(b,w,i,u):
-    g=p(u,w.T)
-    w-=0.04*p(i.T,u)
+D=dot
+R=lambda x:maximum(0,x)
+P=lambda x:(x>0)
+def B(b,w,i,u):
+    g=D(u,w.T)
+    w-=0.04*D(i.T,u)
     b-=0.04*sum(u)
     return g
-f=lambda a,b:random.rand(a,b)-0.5
-w,c,v,d,x,j,t,e=(f(784,100),f(1,100),f(100,50),f(1,50),f(50,10),f(1,10),10000,0)
+I=lambda a,b:random.rand(a,b)-0.5
+w,c,v,d,x,j,t,e=(I(784,100),I(1,100),I(100,50),I(1,50),I(50,10),I(1,10),10000,0)
 for i in range(t*6):
-    q=o(p(xt[i],w)+c)
-    n=o(p(q,v)+d)
-    s=p(n,x)+j
+    q=R(D(xt[i],w)+c)
+    n=R(D(q,v)+d)
+    s=D(n,x)+j
     r=exp(s-max(s))/sum(exp(s-max(s)))
-    b(c,w,xt[i],b(d,v,q,b(j,x,n,r-yt[i])*k(n))*k(q))
+    B(c,w,xt[i],B(d,v,q,B(j,x,n,r-yt[i])*P(n))*P(q))
     e-=log(r[0,argmax(yt[i])])
     if (i+1)%t==0:
         print(f"At {i+1}/{t*6} the error is {e/t}")
         e=0
 for i in range(t):
-    e+=argmax(ys[i])!=argmax(p(o(p(o(p(xs[i],w)+c),v)+d),x)+j)
+    e+=argmax(ys[i])!=argmax(D(R(D(R(D(xs[i],w)+c),v)+d),x)+j)
 print(f"Test loss: {e/t}")

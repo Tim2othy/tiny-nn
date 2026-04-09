@@ -1,14 +1,14 @@
 from numpy import dot,exp,max,random,sum,maximum,argmax,log
 from load_mnist import xs,xt,ys,yt
 p=dot
-o=lambda x: maximum(0,x)
-k=lambda x: (x>0)
+o=lambda x:maximum(0,x)
+k=lambda x:(x>0)
 def b(b,w,i,u):
     g=p(u,w.T)
     w-=0.04*p(i.T,u)
     b-=0.04*sum(u)
     return g
-f=lambda a,b:random.rand(a, b)-0.5
+f=lambda a,b:random.rand(a,b)-0.5
 w,c,v,d,x,j,t,e=(f(784,100),f(1,100),f(100,50),f(1,50),f(50,10),f(1,10),10000,0)
 for i in range(t*6):
     q=o(p(xt[i],w)+c)
